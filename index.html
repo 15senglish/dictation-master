@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luyện Nghe Chép Chính Tả Tiếng Anh TOEIC - DictationMaster</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .kbd-badge {
+      display: inline-block;
+      padding: 0.15rem 0.4rem;
+      font-size: 0.75rem;
+      font-family: monospace;
+      background-color: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.375rem;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+    }
+    @keyframes pulseGentle {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+    .next-btn-highlight {
+      animation: pulseGentle 1.6s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- MÀN HÌNH ĐĂNG NHẬP (LOGIN SCREEN) -->
+  <div id="loginScreen" class="fixed inset-0 z-50 bg-slate-100 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-xl border border-slate-200 max-w-md w-full p-8">
+      <div class="flex flex-col items-center text-center mb-6">
+        <div class="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200 mb-3">
+          <i class="fa-solid fa-headphones-simple text-2xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-900">DictationMaster</h2>
+        <p class="text-xs text-slate-500 mt-1">Hệ thống luyện nghe chép chính tả TOEIC Part 1–4</p>
+      </div>
+
+      <form onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Tên đăng nhập</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+              <i class="fa-solid fa-user text-sm"></i>
+            </span>
+            <input type="text" id="loginUsername" required placeholder="Nhập tên đăng nhập..." class="w-full pl-10 pr-3.5 py-2.5 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Mật khẩu</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+              <i class="fa-solid fa-lock text-sm"></i>
+            </span>
+            <input type="password" id="loginPassword" required placeholder="Nhập mật khẩu..." class="w-full pl-10 pr-3.5 py-2.5 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+        </div>
+
+        <p id="loginErrorMsg" class="text-xs text-rose-600 font-medium hidden">
+          <i class="fa-solid fa-circle-exclamation mr-1"></i> Sai tên đăng nhập hoặc mật khẩu!
+        </p>
+
+        <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-md shadow-indigo-200 transition active:scale-95">
+          Đăng nhập
+        </button>
+      </form>
+
+      <div class="mt-6 pt-4 border-t border-slate-100 text-center text-[11px] text-slate-400">
+        Tài khoản Admin mặc định: <span class="font-mono text-slate-600 font-semibold">admin</span> / <span class="font-mono text-slate-600 font-semibold">admin123</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ỨNG DỤNG CHÍNH -->
+  <div id="appContainer" class="hidden flex-col min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200 shrink-0">
+            <i class="fa-solid fa-headphones-simple text-lg"></i>
+          </div>
+          <div class="hidden sm:block">
+            <h1 class="text-lg font-bold text-slate-900 leading-tight">DictationMaster</h1>
+            <p class="text-xs text-slate-500 font-medium">Luyện nghe chép chính tả TOEIC</p>
+          </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <nav class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl">
+          <button id="tabLearnerBtn" onclick="switchTab('learner')" class="flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-white text-indigo-700 shadow-sm">
+            <i class="fa-solid fa-book-open-reader"></i>
+            <span>Luyện nghe</span>
+          </button>
+          <button id="tabManageBtn" onclick="switchTab('manage')" class="hidden flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900">
+            <i class="fa-solid fa-folder-plus"></i>
+            <span>Bài tập</span>
+          </button>
+          <button id="tabUsersBtn" onclick="switchTab('users')" class="hidden flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900">
+            <i class="fa-solid fa-users-gear"></i>
+            <span>User</span>
+          </button>
+        </nav>
+
+        <!-- User Profile & Logout -->
+        <div class="flex items-center space-x-2 sm:space-x-3">
+          <div class="text-right hidden md:block">
+            <div id="headerUserName" class="text-xs font-bold text-slate-800">Admin</div>
+            <div id="headerUserRole" class="text-[10px] font-semibold uppercase tracking-wider text-indigo-600">Quản trị viên</div>
+          </div>
+          <button onclick="handleLogout()" title="Đăng xuất" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-xs font-semibold transition flex items-center gap-1.5">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span class="hidden sm:inline">Thoát</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+
+      <!-- TAB 1: PHÒNG LUYỆN NGHE -->
+      <div id="tabLearner" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Cột Trái: Chọn Part TOEIC, Chọn bài & Media Player -->
+        <div class="lg:col-span-5 space-y-4">
+          <!-- Card Chọn Part & Chọn bài nghe -->
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+            <div class="flex items-center justify-between mb-2.5">
+              <label class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-indigo-600"></i> Chọn phần thi TOEIC
+              </label>
+              <span id="lessonCountBadge" class="text-xs bg-indigo-50 text-indigo-700 font-semibold px-2.5 py-0.5 rounded-full border border-indigo-100">0 bài</span>
+            </div>
+
+            <!-- Bộ lọc Part 1 - Part 4 & Tất cả -->
+            <div id="partFilterContainer" class="grid grid-cols-5 gap-1.5 mb-3.5 bg-slate-100 p-1 rounded-xl">
+              <button type="button" onclick="selectPartFilter('all')" data-part="all" class="part-filter-btn py-1.5 px-1 rounded-lg text-[11px] font-bold transition text-center bg-white text-indigo-700 shadow-sm">
+                Tất cả <span id="count-all" class="block text-[10px] font-normal opacity-75">0</span>
+              </button>
+              <button type="button" onclick="selectPartFilter('part1')" data-part="part1" class="part-filter-btn py-1.5 px-1 rounded-lg text-[11px] font-bold transition text-center text-slate-600 hover:text-slate-900">
+                Part 1 <span id="count-part1" class="block text-[10px] font-normal opacity-75">0</span>
+              </button>
+              <button type="button" onclick="selectPartFilter('part2')" data-part="part2" class="part-filter-btn py-1.5 px-1 rounded-lg text-[11px] font-bold transition text-center text-slate-600 hover:text-slate-900">
+                Part 2 <span id="count-part2" class="block text-[10px] font-normal opacity-75">0</span>
+              </button>
+              <button type="button" onclick="selectPartFilter('part3')" data-part="part3" class="part-filter-btn py-1.5 px-1 rounded-lg text-[11px] font-bold transition text-center text-slate-600 hover:text-slate-900">
+                Part 3 <span id="count-part3" class="block text-[10px] font-normal opacity-75">0</span>
+              </button>
+              <button type="button" onclick="selectPartFilter('part4')" data-part="part4" class="part-filter-btn py-1.5 px-1 rounded-lg text-[11px] font-bold transition text-center text-slate-600 hover:text-slate-900">
+                Part 4 <span id="count-part4" class="block text-[10px] font-normal opacity-75">0</span>
+              </button>
+            </div>
+
+            <!-- Dropdown danh sách bài nghe theo Part -->
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
+                <i class="fa-solid fa-list-check text-slate-400"></i> Danh sách audio
+              </span>
+              <span id="lessonPositionBadge" class="text-[11px] font-semibold text-slate-500">Câu 1 / 1</span>
+            </div>
+            <select id="lessonSelect" onchange="onSelectLesson()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all cursor-pointer">
+            </select>
+            <p id="lessonDesc" class="text-xs text-slate-500 mt-2 italic"></p>
+          </div>
+
+          <!-- Card Trình phát media & Điều khiển -->
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col items-center">
+            <div class="w-full bg-black rounded-xl overflow-hidden shadow-inner relative flex items-center justify-center aspect-video max-h-60 sm:max-h-64">
+              <video id="mediaPlayer" class="w-full h-full object-contain" playsinline preload="metadata"></video>
+              <div id="audioVisualizer" class="hidden absolute inset-0 bg-gradient-to-br from-indigo-950 to-slate-900 flex flex-col items-center justify-center text-white pointer-events-none">
+                <i class="fa-solid fa-volume-high text-4xl text-indigo-400 mb-2 animate-pulse"></i>
+                <span id="visualizerPartLabel" class="text-xs text-indigo-300 tracking-wider uppercase font-bold mb-0.5">TOEIC LISTENING</span>
+                <span class="text-[11px] text-slate-400 tracking-wider uppercase font-medium">Đang phát tệp âm thanh</span>
+              </div>
+            </div>
+
+            <!-- Thanh tiến trình -->
+            <div class="w-full mt-3 flex items-center gap-2">
+              <span id="currentTimeText" class="text-xs font-mono text-slate-500 w-10 text-right">0:00</span>
+              <input id="seekBar" type="range" min="0" max="100" value="0" step="0.1" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+              <span id="durationText" class="text-xs font-mono text-slate-500 w-10">0:00</span>
+            </div>
+
+            <!-- Quick Controls -->
+            <div class="w-full grid grid-cols-5 gap-2 mt-3 pt-3 border-t border-slate-100">
+              <button onclick="rewind(5)" title="Tua lùi 5 giây" class="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition active:scale-95 text-xs font-semibold">
+                <i class="fa-solid fa-rotate-left mb-1 text-sm"></i> -5s
+              </button>
+              <button onclick="rewind(2)" title="Tua lùi 2 giây" class="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition active:scale-95 text-xs font-semibold">
+                <i class="fa-solid fa-backward-step mb-1 text-sm"></i> -2s
+              </button>
+              <button id="playPauseBtn" onclick="togglePlay()" class="flex flex-col items-center justify-center p-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-200 transition active:scale-95 text-xs font-semibold">
+                <i id="playIcon" class="fa-solid fa-play mb-1 text-sm"></i> <span>Play</span>
+              </button>
+              <button onclick="forward(5)" title="Tua tới 5 giây" class="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition active:scale-95 text-xs font-semibold">
+                <i class="fa-solid fa-rotate-right mb-1 text-sm"></i> +5s
+              </button>
+              <div class="relative flex items-center justify-center">
+                <select id="playbackRate" onchange="changePlaybackRate()" class="w-full h-full text-center bg-slate-100 hover:bg-slate-200 font-semibold text-xs text-slate-700 rounded-xl cursor-pointer border-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="0.75">0.75x</option>
+                  <option value="1.0" selected>1.0x</option>
+                  <option value="1.25">1.25x</option>
+                  <option value="1.5">1.5x</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="w-full mt-3 bg-amber-50/70 rounded-xl p-2.5 border border-amber-200 text-amber-900 text-xs">
+              <p class="font-semibold flex items-center gap-1.5 mb-1 text-amber-800">
+                <i class="fa-regular fa-keyboard"></i> Phím tắt thao tác nhanh:
+              </p>
+              <div class="flex flex-wrap gap-2 text-[11px]">
+                <span><span class="kbd-badge">Ctrl</span> + <span class="kbd-badge">Space</span>: Play/Pause</span>
+                <span><span class="kbd-badge">Alt</span> + <span class="kbd-badge">←</span> / <span class="kbd-badge">→</span>: Tua 3s</span>
+                <span><span class="kbd-badge">Enter</span>: Check đáp án</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột Phải: Ô Nhập Dictation (Tự động chuyển giao diện Part 2 hoặc Tiêu chuẩn) -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div class="flex items-center gap-2">
+                <label class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                  <i class="fa-solid fa-pen-nib text-indigo-600"></i> Phần chép chính tả của bạn
+                </label>
+                <span id="activePartBadge" class="text-[11px] font-bold uppercase px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">PART 2</span>
+              </div>
+              <div class="flex items-center space-x-3 text-xs text-slate-500">
+                <span id="wordCountLive">0 từ</span>
+                <button onclick="clearUserInput()" class="text-slate-400 hover:text-rose-600 transition font-medium" title="Xóa nội dung gõ">
+                  <i class="fa-regular fa-trash-can"></i> Xóa
+                </button>
+              </div>
+            </div>
+
+            <!-- GIAO DIỆN NHẬP TIÊU CHUẨN (PART 1, PART 3, PART 4) -->
+            <div id="standardInputContainer" class="hidden">
+              <textarea id="userDictationInput" rows="6" 
+                placeholder="Lắng nghe và gõ lại những gì bạn nghe được tại đây... Nhấn Enter hoặc bấm Check để kiểm tra từng từ!"
+                class="w-full p-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-slate-800 text-sm leading-relaxed resize-y placeholder:text-slate-400"
+                oninput="updateWordCount()"
+                onkeydown="handleInputKeydown(event)"></textarea>
+            </div>
+
+            <!-- GIAO DIỆN ĐIỀN TÁCH Ô RIÊNG CHO PART 2: CÂU HỎI + (A), (B), (C) -->
+            <div id="part2InputContainer" class="space-y-3">
+              <!-- Ô 1: Câu hỏi (Question) -->
+              <div class="bg-slate-50/80 p-3 rounded-xl border border-slate-200 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:bg-white transition">
+                <label for="p2QuestionInput" class="block text-[11px] font-bold uppercase tracking-wider text-indigo-700 mb-1 flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-question"></i> Câu hỏi (Question)
+                </label>
+                <input type="text" id="p2QuestionInput"
+                  placeholder="Gõ câu hỏi bạn nghe được (VD: Where is the conference being held?)..."
+                  class="w-full bg-transparent text-sm font-medium text-slate-800 outline-none placeholder:text-slate-400 placeholder:font-normal"
+                  oninput="updateWordCount()"
+                  onkeydown="handleInputKeydown(event)">
+              </div>
+
+              <!-- Ô 2: Đáp án (A) -->
+              <div class="flex items-center rounded-xl border border-slate-300 bg-white overflow-hidden focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition">
+                <span class="px-3.5 py-2.5 bg-indigo-50 border-r border-slate-200 text-indigo-700 font-extrabold text-sm select-none shrink-0">
+                  (A)
+                </span>
+                <input type="text" id="p2OptionAInput"
+                  placeholder="Gõ nội dung lựa chọn A..."
+                  class="w-full px-3.5 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400"
+                  oninput="updateWordCount()"
+                  onkeydown="handleInputKeydown(event)">
+              </div>
+
+              <!-- Ô 3: Đáp án (B) -->
+              <div class="flex items-center rounded-xl border border-slate-300 bg-white overflow-hidden focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition">
+                <span class="px-3.5 py-2.5 bg-indigo-50 border-r border-slate-200 text-indigo-700 font-extrabold text-sm select-none shrink-0">
+                  (B)
+                </span>
+                <input type="text" id="p2OptionBInput"
+                  placeholder="Gõ nội dung lựa chọn B..."
+                  class="w-full px-3.5 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400"
+                  oninput="updateWordCount()"
+                  onkeydown="handleInputKeydown(event)">
+              </div>
+
+              <!-- Ô 4: Đáp án (C) -->
+              <div class="flex items-center rounded-xl border border-slate-300 bg-white overflow-hidden focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition">
+                <span class="px-3.5 py-2.5 bg-indigo-50 border-r border-slate-200 text-indigo-700 font-extrabold text-sm select-none shrink-0">
+                  (C)
+                </span>
+                <input type="text" id="p2OptionCInput"
+                  placeholder="Gõ nội dung lựa chọn C..."
+                  class="w-full px-3.5 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400"
+                  oninput="updateWordCount()"
+                  onkeydown="handleInputKeydown(event)">
+              </div>
+
+              <p class="text-[11px] text-slate-400 flex items-center gap-1.5 pt-0.5">
+                <i class="fa-solid fa-circle-info text-indigo-400"></i>
+                Nhãn <strong class="text-slate-600">(A) (B) (C)</strong> đã được tích hợp sẵn, bạn chỉ cần điền lời thoại từng câu. Dùng <span class="kbd-badge">Tab</span> để chuyển ô nhanh.
+              </p>
+            </div>
+
+            <!-- Thanh tùy chọn & Các nút Check / Đáp án gốc / Chuyển câu -->
+            <div class="flex flex-wrap items-center justify-between gap-3 mt-4 pt-3 border-t border-slate-100">
+              <div class="flex flex-wrap items-center gap-4 text-xs font-medium text-slate-600">
+                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                  <input type="checkbox" id="optIgnoreCase" checked class="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4">
+                  <span>Bỏ qua hoa / thường</span>
+                </label>
+                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                  <input type="checkbox" id="optIgnorePunctuation" checked class="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4">
+                  <span>Bỏ qua dấu câu (, . ! ?)</span>
+                </label>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" id="prevLessonBtn" onclick="goToPrevLesson()" title="Chuyển về câu trước trong Part" class="px-3 py-2 text-xs font-semibold rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 transition disabled:opacity-40 disabled:pointer-events-none flex items-center gap-1">
+                  <i class="fa-solid fa-arrow-left"></i>
+                  <span class="hidden sm:inline">Trước</span>
+                </button>
+                <button type="button" onclick="toggleOriginalTranscript()" class="px-3 py-2 text-xs font-semibold rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 transition">
+                  <i class="fa-regular fa-eye mr-1"></i> Đáp án gốc
+                </button>
+                <button type="button" onclick="checkDictationResult()" class="px-5 py-2 text-sm font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-200 transition active:scale-95 flex items-center space-x-2">
+                  <i class="fa-solid fa-check"></i>
+                  <span>Check</span>
+                </button>
+                <button type="button" id="nextLessonTopBtn" onclick="goToNextLesson()" title="Chuyển sang câu tiếp theo trong Part" class="px-3.5 py-2 text-xs font-bold rounded-xl border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-700 transition disabled:opacity-40 disabled:pointer-events-none flex items-center gap-1.5">
+                  <span>Next</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transcript mẫu -->
+          <div id="originalTranscriptBox" class="hidden bg-slate-100 border border-slate-200 rounded-2xl p-4 transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <i class="fa-solid fa-key text-amber-500"></i> Transcript Chuẩn
+              </span>
+              <button onclick="toggleOriginalTranscript()" class="text-slate-400 hover:text-slate-600 text-xs">
+                <i class="fa-solid fa-xmark"></i> Đóng
+              </button>
+            </div>
+            <p id="originalTranscriptContent" class="text-sm text-slate-700 leading-relaxed font-normal select-text"></p>
+          </div>
+
+          <!-- Khung Kết quả Gợi ý từng từ (DailyDictation Style) -->
+          <div id="resultCard" class="hidden bg-white rounded-2xl p-5 shadow-sm border border-slate-200 transition-all">
+            <div class="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-slate-100">
+              <div class="flex-1 min-w-[200px]">
+                <h3 id="resultStatusTitle" class="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <i class="fa-solid fa-lightbulb text-amber-500"></i> Gợi ý từ tiếp theo
+                </h3>
+                <p id="resultStatusDesc" class="text-xs text-slate-500 mt-0.5">Sửa từ được gợi ý bên dưới rồi nhấn Check để mở tiếp các từ sau</p>
+              </div>
+
+              <div class="flex items-center gap-4">
+                <div class="text-right">
+                  <div id="progressText" class="text-lg font-extrabold text-indigo-600 leading-none">0 / 0</div>
+                  <div class="text-[10px] text-slate-400 font-semibold uppercase mt-0.5">Từ đã đúng</div>
+                </div>
+                <!-- Nút Next nổi bật khi hoàn thành 100% -->
+                <button type="button" id="nextLessonResultBtn" onclick="goToNextLesson()" class="hidden px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-200 transition flex items-center gap-2 next-btn-highlight">
+                  <span>Câu tiếp theo (Next)</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Thanh tiến độ hoàn thành câu -->
+            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden my-3">
+              <div id="progressBarFill" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <!-- Chú thích màu sắc -->
+            <div class="flex flex-wrap items-center gap-4 text-xs font-medium text-slate-500 mb-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+              <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span> Đã đúng</span>
+              <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-400 inline-block"></span> Từ cần sửa (Gợi ý)</span>
+              <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-300 inline-block"></span> Từ phía sau (Đang ẩn)</span>
+            </div>
+
+            <!-- Vùng hiển thị các thẻ từ -->
+            <div class="p-4 rounded-xl bg-slate-50/80 border border-slate-200 text-base leading-loose flex flex-wrap items-center gap-1.5" id="diffContainer">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: QUẢN LÝ & THÊM BÀI HỌC (CHỈ DÀNH CHO ADMIN) -->
+      <div id="tabManage" class="hidden max-w-4xl mx-auto space-y-6">
+        <div id="lessonFormCard" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 transition-all">
+          <div class="flex items-center justify-between mb-5 border-b border-slate-100 pb-4">
+            <div class="flex items-center space-x-3">
+              <div id="formHeaderIcon" class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                <i class="fa-solid fa-plus"></i>
+              </div>
+              <div>
+                <h2 id="formHeaderTitle" class="text-base font-bold text-slate-900">Thêm bài nghe TOEIC mới</h2>
+                <p id="formHeaderSubtitle" class="text-xs text-slate-500">Chọn đúng Part TOEIC (Part 1–4), tải tệp từ máy tính hoặc dán đường dẫn URL</p>
+              </div>
+            </div>
+            <button type="button" id="cancelEditBtn" onclick="resetFormState()" class="hidden px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+              <i class="fa-solid fa-xmark mr-1"></i> Hủy chỉnh sửa
+            </button>
+          </div>
+
+          <form id="createLessonForm" onsubmit="handleSaveLesson(event)" class="space-y-4">
+            <input type="hidden" id="editingLessonId" value="">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="md:col-span-2">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Tiêu đề bài học *</label>
+                <input type="text" id="inputLessonTitle" required placeholder="Ví dụ: E26-T01-08 (Part 2 - Meeting Schedule)" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Phần thi TOEIC *</label>
+                <select id="inputLessonPart" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white font-semibold text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <option value="part1">Part 1 (Mô tả tranh)</option>
+                  <option value="part2" selected>Part 2 (Hỏi - Đáp A, B, C)</option>
+                  <option value="part3">Part 3 (Hội thoại ngắn)</option>
+                  <option value="part4">Part 4 (Bài nói chuyện ngắn)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Nguồn File Video / Âm thanh *</label>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="border border-dashed border-slate-300 rounded-xl p-4 text-center hover:bg-slate-50 transition cursor-pointer relative" onclick="document.getElementById('inputFile').click()">
+                  <input type="file" id="inputFile" accept="audio/*,video/*" class="hidden" onchange="handleFileUpload(event)">
+                  <i class="fa-solid fa-cloud-arrow-up text-2xl text-indigo-500 mb-2"></i>
+                  <div class="text-xs font-semibold text-slate-700">Tải tệp từ máy tính</div>
+                  <div id="fileUploadName" class="text-[11px] text-slate-400 mt-1 truncate">Hỗ trợ MP3, WAV, MP4, WebM</div>
+                </div>
+
+                <div class="border border-slate-200 rounded-xl p-4 flex flex-col justify-center">
+                  <div class="text-xs font-semibold text-slate-700 mb-1.5">Hoặc dán Link URL trực tiếp</div>
+                  <input type="url" id="inputMediaUrl" placeholder="https://domain.com/audio.mp3" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="handleUrlInput()">
+                </div>
+              </div>
+              <p id="mediaPreviewStatus" class="text-xs text-indigo-600 font-medium italic hidden"></p>
+            </div>
+
+            <div>
+              <div class="flex justify-between items-center mb-1.5">
+                <label class="text-xs font-bold uppercase tracking-wider text-slate-700">Đoạn Transcript mẫu chuẩn *</label>
+                <button type="button" onclick="formatScriptInput()" class="text-[11px] text-indigo-600 hover:text-indigo-800 font-medium">
+                  <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Chuẩn hóa khoảng trắng
+                </button>
+              </div>
+              <textarea id="inputTranscript" rows="5" required placeholder="Với Part 2 hãy nhập theo dạng: Câu hỏi? (A) Đáp án A. (B) Đáp án B. (C) Đáp án C." class="w-full text-sm p-3.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none leading-relaxed"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Mô tả hoặc ghi chú</label>
+              <input type="text" id="inputLessonDesc" placeholder="Ví dụ: Đề ETS 2026 - Test 01 - Câu 08" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+              <button type="submit" id="submitLessonBtn" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-md shadow-indigo-200 transition">
+                <i class="fa-solid fa-cloud-check mr-1.5"></i> Lưu bài học mới
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-bold text-slate-900">Danh sách bài học hiện có</h3>
+            <button onclick="restoreDefaultLessons()" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold">
+              <i class="fa-solid fa-arrow-rotate-left mr-1"></i> Khôi phục bài mẫu TOEIC
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600">
+              <thead class="bg-slate-50 text-slate-700 text-xs uppercase font-bold tracking-wider border-y border-slate-200">
+                <tr>
+                  <th class="py-3 px-4">Tiêu đề bài học</th>
+                  <th class="py-3 px-4">Part</th>
+                  <th class="py-3 px-4">Nguồn / Loại</th>
+                  <th class="py-3 px-4">Số từ</th>
+                  <th class="py-3 px-4 text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="lessonTableBody" class="divide-y divide-slate-100">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: QUẢN LÝ TÀI KHOẢN USER (CHỈ DÀNH CHO ADMIN) -->
+      <div id="tabUsers" class="hidden max-w-4xl mx-auto space-y-6">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+          <div class="flex items-center space-x-3 mb-5 border-b border-slate-100 pb-4">
+            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <div>
+              <h2 class="text-base font-bold text-slate-900">Đăng ký tài khoản mới</h2>
+              <p class="text-xs text-slate-500">Tạo tài khoản cho học viên vào luyện nghe hoặc thêm quản trị viên</p>
+            </div>
+          </div>
+
+          <form onsubmit="handleCreateUser(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Họ và tên *</label>
+              <input type="text" id="newUserFullName" required placeholder="VD: Nguyễn Văn A" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Tên đăng nhập *</label>
+              <input type="text" id="newUserUsername" required placeholder="VD: hocvien01" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Mật khẩu *</label>
+              <input type="text" id="newUserPassword" required placeholder="Nhập mật khẩu..." class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Vai trò</label>
+              <select id="newUserRole" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <option value="user" selected>Học viên (User)</option>
+                <option value="admin">Quản trị (Admin)</option>
+              </select>
+            </div>
+            <div class="md:col-span-4 flex justify-end pt-2">
+              <button type="submit" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-md shadow-emerald-200 transition">
+                <i class="fa-solid fa-user-check mr-1.5"></i> Tạo tài khoản
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-bold text-slate-900">Danh sách tài khoản hệ thống</h3>
+            <span id="userCountBadge" class="text-xs bg-slate-100 text-slate-700 font-semibold px-2.5 py-1 rounded-full">0 tài khoản</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600">
+              <thead class="bg-slate-50 text-slate-700 text-xs uppercase font-bold tracking-wider border-y border-slate-200">
+                <tr>
+                  <th class="py-3 px-4">Họ và tên</th>
+                  <th class="py-3 px-4">Tên đăng nhập</th>
+                  <th class="py-3 px-4">Mật khẩu</th>
+                  <th class="py-3 px-4">Vai trò</th>
+                  <th class="py-3 px-4 text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="userTableBody" class="divide-y divide-slate-100">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Notification Toast Modal -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center space-x-2 text-sm pointer-events-none">
+    <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="toastMessage">Thông báo</span>
+  </div>
+
+  <script>
+    // ==========================================
+    // 0. DỮ LIỆU MẶC ĐỊNH (ADMIN & BÀI HỌC TOEIC PART 1 - 4)
+    // ==========================================
+    const DEFAULT_USERS = [
+      {
+        id: 'user-admin-root',
+        fullName: 'Quản trị viên Hệ thống',
+        username: 'admin',
+        password: 'admin123',
+        role: 'admin'
+      }
+    ];
+
+    const DEFAULT_LESSONS = [
+      {
+        id: 'lesson-p2-1',
+        part: 'part2',
+        title: 'E26-T01-07 (Part 2 - Conference Location)',
+        desc: 'TOEIC Listening Part 2 - Hỏi đáp về địa điểm tổ chức hội nghị.',
+        mediaUrl: 'https://github.com/longhua1801/english-audio-storage/releases/download/E26-T01-07/E26-T01-07.mp3',
+        mediaType: 'audio',
+        isLocalFile: false,
+        transcript: 'Where is the conference being held? (A) A three-day vacation. (B) At the Riverview Hotel. (C) In the supply cabinet.'
+      },
+      {
+        id: 'lesson-p2-2',
+        part: 'part2',
+        title: 'E26-T01-08 (Part 2 - Sample Question)',
+        desc: 'TOEIC Listening Part 2 - Câu hỏi mẫu luyện tập chuyển câu Next.',
+        mediaUrl: 'https://actions.google.com/sounds/v1/alarms/beep_short.ogg',
+        mediaType: 'audio',
+        isLocalFile: false,
+        transcript: 'When will the marketing report be ready? (A) By tomorrow afternoon. (B) In the main conference room. (C) Yes, I read the article.'
+      },
+      {
+        id: 'lesson-p1-1',
+        part: 'part1',
+        title: 'TOEIC Part 1 - Office Meeting Scene',
+        desc: 'TOEIC Listening Part 1 - Mô tả tranh hoạt động tại văn phòng.',
+        mediaUrl: 'https://actions.google.com/sounds/v1/water/rain_heavy_loud.ogg',
+        mediaType: 'audio',
+        isLocalFile: false,
+        transcript: 'Some people are gathered around a table looking at a laptop computer.'
+      },
+      {
+        id: 'lesson-p3-1',
+        part: 'part3',
+        title: 'TOEIC Part 3 - Short Conversation',
+        desc: 'TOEIC Listening Part 3 - Hội thoại ngắn giữa hai đồng nghiệp.',
+        mediaUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+        mediaType: 'video',
+        isLocalFile: false,
+        transcript: 'A consistent morning routine sets the tone for the entire day. Start with a glass of water, get some fresh air, and review your top priorities before checking your phone.'
+      },
+      {
+        id: 'lesson-p4-1',
+        part: 'part4',
+        title: 'TOEIC Part 4 - Airport Announcement',
+        desc: 'TOEIC Listening Part 4 - Bài nói chuyện / thông báo ngắn.',
+        mediaUrl: 'https://actions.google.com/sounds/v1/water/rain_heavy_loud.ogg',
+        mediaType: 'audio',
+        isLocalFile: false,
+        transcript: 'Listening to native speakers every single day will naturally train your brain to recognize different accents, connected speech, and subtle sentence stress.'
+      }
+    ];
+
+    const PART_LABELS = {
+      part1: 'Part 1',
+      part2: 'Part 2',
+      part3: 'Part 3',
+      part4: 'Part 4'
+    };
+
+    let users = [];
+    let currentUser = null;
+    let lessons = [];
+    let currentLesson = null;
+    let currentPartFilter = 'all';
+    let uploadedFileObject = null;
+    let currentActiveObjectUrl = null;
+
+    // ==========================================
+    // 1. QUẢN LÝ ĐĂNG NHẬP & PHÂN QUYỀN USER
+    // ==========================================
+    function initAuth() {
+      const storedUsers = localStorage.getItem('dictation_users');
+      if (storedUsers) {
+        try {
+          users = JSON.parse(storedUsers);
+        } catch (e) {
+          users = JSON.parse(JSON.stringify(DEFAULT_USERS));
+        }
+      } else {
+        users = JSON.parse(JSON.stringify(DEFAULT_USERS));
+        saveUsers();
+      }
+
+      const savedSession = sessionStorage.getItem('dictation_current_user');
+      if (savedSession) {
+        try {
+          const parsed = JSON.parse(savedSession);
+          const validUser = users.find(u => u.id === parsed.id);
+          if (validUser) {
+            loginSuccess(validUser);
+            return;
+          }
+        } catch (e) {}
+      }
+    }
+
+    function saveUsers() {
+      localStorage.setItem('dictation_users', JSON.stringify(users));
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const usernameInput = document.getElementById('loginUsername').value.trim();
+      const passwordInput = document.getElementById('loginPassword').value.trim();
+      const errorMsg = document.getElementById('loginErrorMsg');
+
+      const matchedUser = users.find(
+        u => u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput
+      );
+
+      if (!matchedUser) {
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+
+      errorMsg.classList.add('hidden');
+      sessionStorage.setItem('dictation_current_user', JSON.stringify(matchedUser));
+      loginSuccess(matchedUser);
+      showToast(`Xin chào, ${matchedUser.fullName}!`);
+    }
+
+    async function loginSuccess(user) {
+      currentUser = user;
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('appContainer').classList.remove('hidden');
+      document.getElementById('appContainer').classList.add('flex');
+
+      document.getElementById('headerUserName').innerText = user.fullName;
+      const roleBadge = document.getElementById('headerUserRole');
+      const tabManageBtn = document.getElementById('tabManageBtn');
+      const tabUsersBtn = document.getElementById('tabUsersBtn');
+
+      if (user.role === 'admin') {
+        roleBadge.innerText = 'Quản trị viên (Admin)';
+        roleBadge.className = 'text-[10px] font-bold uppercase tracking-wider text-indigo-600';
+        tabManageBtn.classList.remove('hidden');
+        tabUsersBtn.classList.remove('hidden');
+        renderUserTable();
+      } else {
+        roleBadge.innerText = 'Học viên (User)';
+        roleBadge.className = 'text-[10px] font-semibold uppercase tracking-wider text-emerald-600';
+        tabManageBtn.classList.add('hidden');
+        tabUsersBtn.classList.add('hidden');
+      }
+
+      switchTab('learner');
+      await initLessons();
+    }
+
+    function handleLogout() {
+      if (!player.paused) player.pause();
+      currentUser = null;
+      sessionStorage.removeItem('dictation_current_user');
+      document.getElementById('loginUsername').value = '';
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('appContainer').classList.add('hidden');
+      document.getElementById('appContainer').classList.remove('flex');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      showToast('Đã đăng xuất khỏi hệ thống.', 'info');
+    }
+
+    function handleCreateUser(e) {
+      e.preventDefault();
+      if (!currentUser || currentUser.role !== 'admin') return;
+
+      const fullName = document.getElementById('newUserFullName').value.trim();
+      const username = document.getElementById('newUserUsername').value.trim();
+      const password = document.getElementById('newUserPassword').value.trim();
+      const role = document.getElementById('newUserRole').value;
+
+      if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+        showToast('Tên đăng nhập này đã tồn tại!', 'error');
+        return;
+      }
+
+      const newUser = {
+        id: 'user-' + Date.now(),
+        fullName,
+        username,
+        password,
+        role
+      };
+
+      users.push(newUser);
+      saveUsers();
+      renderUserTable();
+
+      document.getElementById('newUserFullName').value = '';
+      document.getElementById('newUserUsername').value = '';
+      document.getElementById('newUserPassword').value = '';
+      document.getElementById('newUserRole').value = 'user';
+
+      showToast(`Đã tạo tài khoản "${username}" thành công!`);
+    }
+
+    function changeUserPassword(userId) {
+      if (!currentUser || currentUser.role !== 'admin') return;
+      const target = users.find(u => u.id === userId);
+      if (!target) return;
+
+      const newPass = prompt(`Nhập mật khẩu mới cho tài khoản "${target.username}":`, target.password);
+      if (newPass !== null && newPass.trim() !== '') {
+        target.password = newPass.trim();
+        saveUsers();
+        renderUserTable();
+        showToast(`Đã đổi mật khẩu cho ${target.username}.`);
+      }
+    }
+
+    function deleteUser(userId) {
+      if (!currentUser || currentUser.role !== 'admin') return;
+      if (userId === 'user-admin-root') {
+        showToast('Không thể xóa tài khoản Admin gốc!', 'error');
+        return;
+      }
+      if (userId === currentUser.id) {
+        showToast('Bạn không thể tự xóa tài khoản đang đăng nhập!', 'error');
+        return;
+      }
+
+      const target = users.find(u => u.id === userId);
+      if (target && confirm(`Bạn có chắc muốn xóa tài khoản "${target.username}"?`)) {
+        users = users.filter(u => u.id !== userId);
+        saveUsers();
+        renderUserTable();
+        showToast('Đã xóa tài khoản.');
+      }
+    }
+
+    function renderUserTable() {
+      const tbody = document.getElementById('userTableBody');
+      tbody.innerHTML = '';
+      document.getElementById('userCountBadge').innerText = `${users.length} tài khoản`;
+
+      users.forEach(u => {
+        const isAdmin = u.role === 'admin';
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-semibold text-slate-800">${escapeHtml(u.fullName)}</td>
+          <td class="py-3 px-4 font-mono text-xs text-slate-700">${escapeHtml(u.username)}</td>
+          <td class="py-3 px-4 font-mono text-xs text-slate-500">${escapeHtml(u.password)}</td>
+          <td class="py-3 px-4">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${isAdmin ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'}">
+              ${isAdmin ? 'Admin' : 'Học viên'}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right whitespace-nowrap space-x-1">
+            <button onclick="changeUserPassword('${u.id}')" class="text-xs font-semibold text-amber-600 hover:text-amber-800 py-1 px-2.5 rounded-lg hover:bg-amber-50 transition" title="Đổi mật khẩu">
+              <i class="fa-solid fa-key mr-1"></i> Đổi MK
+            </button>
+            ${u.id !== 'user-admin-root' ? `
+              <button onclick="deleteUser('${u.id}')" class="text-xs text-slate-400 hover:text-rose-600 py-1 px-2 rounded-lg hover:bg-rose-50 transition" title="Xóa tài khoản">
+                <i class="fa-regular fa-trash-can"></i>
+              </button>
+            ` : ''}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // ==========================================
+    // 2. INDEXED DB - LƯU TRỮ FILE VĨNH VIỄN
+    // ==========================================
+    const DB_NAME = 'DictationMasterDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'mediaFiles';
+
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME);
+          }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function saveMediaToDB(lessonId, fileBlob) {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).put(fileBlob, lessonId);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    async function getMediaFromDB(lessonId) {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const req = tx.objectStore(STORE_NAME).get(lessonId);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function deleteMediaFromDB(lessonId) {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).delete(lessonId);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    // ==========================================
+    // 3. KHỞI TẠO & PHÂN LOẠI TOEIC PART 1 - 4
+    // ==========================================
+    function detectLessonPart(lesson) {
+      if (lesson.part && ['part1', 'part2', 'part3', 'part4'].includes(lesson.part)) {
+        return lesson.part;
+      }
+      const titleLower = (lesson.title || '').toLowerCase();
+      const transcript = lesson.transcript || '';
+      if (titleLower.includes('part 1') || titleLower.includes('part1')) return 'part1';
+      if (titleLower.includes('part 2') || titleLower.includes('part2') || /\(A\).*\(B\).*\(C\)/i.test(transcript)) return 'part2';
+      if (titleLower.includes('part 3') || titleLower.includes('part3')) return 'part3';
+      if (titleLower.includes('part 4') || titleLower.includes('part4')) return 'part4';
+      return 'part1';
+    }
+
+    async function initLessons() {
+      const stored = localStorage.getItem('dictation_lessons');
+      if (stored) {
+        try {
+          lessons = JSON.parse(stored);
+          let needSave = false;
+          lessons.forEach(l => {
+            const detected = detectLessonPart(l);
+            if (l.part !== detected) {
+              l.part = detected;
+              needSave = true;
+            }
+          });
+          if (needSave) saveLessons();
+        } catch (e) {
+          lessons = JSON.parse(JSON.stringify(DEFAULT_LESSONS));
+        }
+      } else {
+        lessons = JSON.parse(JSON.stringify(DEFAULT_LESSONS));
+        saveLessons();
+      }
+      updatePartCounts();
+      renderLessonSelect();
+      renderLessonTable();
+      const filtered = getFilteredLessons();
+      if (filtered.length > 0) {
+        await loadLesson(filtered[0].id);
+      } else if (lessons.length > 0) {
+        await loadLesson(lessons[0].id);
+      }
+    }
+
+    function saveLessons() {
+      try {
+        localStorage.setItem('dictation_lessons', JSON.stringify(lessons));
+        updatePartCounts();
+      } catch (e) {
+        showToast('Lỗi lưu danh sách bài học vào bộ nhớ trình duyệt!', 'error');
+      }
+    }
+
+    function updatePartCounts() {
+      const counts = {
+        all: lessons.length,
+        part1: lessons.filter(l => l.part === 'part1').length,
+        part2: lessons.filter(l => l.part === 'part2').length,
+        part3: lessons.filter(l => l.part === 'part3').length,
+        part4: lessons.filter(l => l.part === 'part4').length
+      };
+      Object.keys(counts).forEach(key => {
+        const el = document.getElementById(`count-${key}`);
+        if (el) el.innerText = counts[key];
+      });
+    }
+
+    function getFilteredLessons() {
+      if (currentPartFilter === 'all') return lessons;
+      return lessons.filter(l => l.part === currentPartFilter);
+    }
+
+    async function selectPartFilter(part) {
+      currentPartFilter = part;
+
+      // Cập nhật giao diện nút chọn Part
+      document.querySelectorAll('.part-filter-btn').forEach(btn => {
+        if (btn.dataset.part === part) {
+          btn.className = "part-filter-btn py-1.5 px-1 rounded-lg text-[11px] font-bold transition text-center bg-white text-indigo-700 shadow-sm";
+        } else {
+          btn.className = "part-filter-btn py-1.5 px-1 rounded-lg text-[11px] font-bold transition text-center text-slate-600 hover:text-slate-900";
+        }
+      });
+
+      renderLessonSelect();
+      const filtered = getFilteredLessons();
+      if (filtered.length > 0) {
+        // Nếu bài hiện tại không nằm trong part vừa chọn thì tải bài đầu tiên của Part đó
+        if (!currentLesson || !filtered.some(l => l.id === currentLesson.id)) {
+          await loadLesson(filtered[0].id);
+        } else {
+          updateNavigationButtonsState();
+        }
+      } else {
+        currentLesson = null;
+        player.pause();
+        player.removeAttribute('src');
+        document.getElementById('lessonDesc').innerText = 'Chưa có bài nghe nào trong phần này.';
+        document.getElementById('lessonPositionBadge').innerText = '0 / 0';
+        updateNavigationButtonsState();
+      }
+    }
+
+    async function restoreDefaultLessons() {
+      if (!currentUser || currentUser.role !== 'admin') return;
+      if (window.confirm("Khôi phục lại bộ bài học mẫu TOEIC Part 1–4 ban đầu? (Các bài bạn tự thêm sẽ bị xóa)")) {
+        for (const l of lessons) {
+          if (l.isLocalFile) {
+            await deleteMediaFromDB(l.id).catch(() => {});
+          }
+        }
+        lessons = JSON.parse(JSON.stringify(DEFAULT_LESSONS));
+        saveLessons();
+        resetFormState();
+        currentPartFilter = 'all';
+        await selectPartFilter('all');
+        renderLessonTable();
+        showToast('Đã khôi phục bộ bài mẫu TOEIC!');
+      }
+    }
+
+    // ==========================================
+    // 4. ĐIỀU KHIỂN MEDIA PLAYER & CHUYỂN CÂU NEXT/PREV
+    // ==========================================
+    const player = document.getElementById('mediaPlayer');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const playIcon = document.getElementById('playIcon');
+    const seekBar = document.getElementById('seekBar');
+    const currentTimeText = document.getElementById('currentTimeText');
+    const durationText = document.getElementById('durationText');
+    const audioVisualizer = document.getElementById('audioVisualizer');
+
+    function switchTab(tab) {
+      if ((tab === 'manage' || tab === 'users') && (!currentUser || currentUser.role !== 'admin')) {
+        showToast('Bạn không có quyền truy cập mục này!', 'error');
+        return;
+      }
+
+      const tabLearner = document.getElementById('tabLearner');
+      const tabManage = document.getElementById('tabManage');
+      const tabUsers = document.getElementById('tabUsers');
+
+      const tabLearnerBtn = document.getElementById('tabLearnerBtn');
+      const tabManageBtn = document.getElementById('tabManageBtn');
+      const tabUsersBtn = document.getElementById('tabUsersBtn');
+
+      const activeClass = "flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-white text-indigo-700 shadow-sm";
+      const inactiveClass = "flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900";
+
+      tabLearner.classList.add('hidden');
+      tabManage.classList.add('hidden');
+      tabUsers.classList.add('hidden');
+
+      tabLearnerBtn.className = inactiveClass;
+      tabManageBtn.className = inactiveClass;
+      tabUsersBtn.className = inactiveClass;
+
+      if (tab === 'learner') {
+        tabLearner.classList.remove('hidden');
+        tabLearnerBtn.className = activeClass;
+      } else if (tab === 'manage') {
+        tabManage.classList.remove('hidden');
+        tabManageBtn.className = activeClass;
+        if (!player.paused) player.pause();
+      } else if (tab === 'users') {
+        tabUsers.classList.remove('hidden');
+        tabUsersBtn.className = activeClass;
+        if (!player.paused) player.pause();
+      }
+    }
+
+    function isPart2Mode(lesson) {
+      if (!lesson) return false;
+      if (lesson.part === 'part2') return true;
+      return /\(A\).*\(B\).*\(C\)/i.test(lesson.transcript || '');
+    }
+
+    function configureInputModeForLesson(lesson) {
+      const standardBox = document.getElementById('standardInputContainer');
+      const part2Box = document.getElementById('part2InputContainer');
+      const partBadge = document.getElementById('activePartBadge');
+      const visualizerPartLabel = document.getElementById('visualizerPartLabel');
+
+      const pLabel = PART_LABELS[lesson.part] || 'TOEIC';
+      partBadge.innerText = pLabel;
+      visualizerPartLabel.innerText = `TOEIC LISTENING • ${pLabel}`;
+
+      // Reset tất cả các ô nhập
+      document.getElementById('userDictationInput').value = '';
+      document.getElementById('p2QuestionInput').value = '';
+      document.getElementById('p2OptionAInput').value = '';
+      document.getElementById('p2OptionBInput').value = '';
+      document.getElementById('p2OptionCInput').value = '';
+
+      if (isPart2Mode(lesson)) {
+        standardBox.classList.add('hidden');
+        part2Box.classList.remove('hidden');
+        setTimeout(() => document.getElementById('p2QuestionInput').focus(), 50);
+      } else {
+        part2Box.classList.add('hidden');
+        standardBox.classList.remove('hidden');
+        setTimeout(() => document.getElementById('userDictationInput').focus(), 50);
+      }
+      updateWordCount();
+    }
+
+    async function loadLesson(id) {
+      currentLesson = lessons.find(l => l.id === id);
+      if (!currentLesson) return;
+
+      document.getElementById('lessonSelect').value = currentLesson.id;
+      document.getElementById('lessonDesc').innerText = currentLesson.desc || '';
+      document.getElementById('originalTranscriptContent').innerText = currentLesson.transcript;
+      
+      // Thiết lập chế độ nhập liệu (Part 2 tách ô A,B,C hoặc Tiêu chuẩn)
+      configureInputModeForLesson(currentLesson);
+
+      document.getElementById('resultCard').classList.add('hidden');
+      document.getElementById('originalTranscriptBox').classList.add('hidden');
+
+      // Đặt lại trạng thái nút Next
+      const nextResultBtn = document.getElementById('nextLessonResultBtn');
+      nextResultBtn.classList.add('hidden');
+      updateNavigationButtonsState();
+
+      player.pause();
+      seekBar.value = 0;
+      currentTimeText.innerText = "0:00";
+      durationText.innerText = "0:00";
+
+      if (currentActiveObjectUrl) {
+        URL.revokeObjectURL(currentActiveObjectUrl);
+        currentActiveObjectUrl = null;
+      }
+
+      if (currentLesson.isLocalFile) {
+        try {
+          const blob = await getMediaFromDB(currentLesson.id);
+          if (blob) {
+            currentActiveObjectUrl = URL.createObjectURL(blob);
+            player.src = currentActiveObjectUrl;
+          } else {
+            showToast('Không tìm thấy file âm thanh trong bộ nhớ trình duyệt.', 'error');
+            player.removeAttribute('src');
+          }
+        } catch (err) {
+          showToast('Lỗi đọc file từ bộ nhớ trình duyệt.', 'error');
+        }
+      } else {
+        player.src = currentLesson.mediaUrl;
+      }
+
+      player.load();
+
+      if (currentLesson.mediaType === 'audio') {
+        audioVisualizer.classList.remove('hidden');
+      } else {
+        audioVisualizer.classList.add('hidden');
+      }
+      updatePlayButtonUI();
+    }
+
+    function updateNavigationButtonsState() {
+      const list = getFilteredLessons();
+      const idx = currentLesson ? list.findIndex(l => l.id === currentLesson.id) : -1;
+
+      const prevBtn = document.getElementById('prevLessonBtn');
+      const nextTopBtn = document.getElementById('nextLessonTopBtn');
+      const posBadge = document.getElementById('lessonPositionBadge');
+
+      if (idx === -1 || list.length === 0) {
+        prevBtn.disabled = true;
+        nextTopBtn.disabled = true;
+        posBadge.innerText = `0 / 0`;
+        return;
+      }
+
+      posBadge.innerText = `Câu ${idx + 1} / ${list.length}`;
+      prevBtn.disabled = idx <= 0;
+      nextTopBtn.disabled = idx >= list.length - 1;
+
+      // Reset kiểu dáng mặc định cho nút Next ở thanh điều khiển
+      nextTopBtn.className = "px-3.5 py-2 text-xs font-bold rounded-xl border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-700 transition disabled:opacity-40 disabled:pointer-events-none flex items-center gap-1.5";
+    }
+
+    async function goToPrevLesson() {
+      const list = getFilteredLessons();
+      if (!currentLesson || list.length === 0) return;
+      const idx = list.findIndex(l => l.id === currentLesson.id);
+      if (idx > 0) {
+        await loadLesson(list[idx - 1].id);
+        showToast(`Đã chuyển về: ${list[idx - 1].title}`, 'info');
+      }
+    }
+
+    async function goToNextLesson() {
+      const list = getFilteredLessons();
+      if (!currentLesson || list.length === 0) return;
+      const idx = list.findIndex(l => l.id === currentLesson.id);
+      if (idx >= 0 && idx < list.length - 1) {
+        const nextItem = list[idx + 1];
+        await loadLesson(nextItem.id);
+        showToast(`Sang câu tiếp theo: ${nextItem.title}`, 'info');
+      } else {
+        const partName = currentPartFilter === 'all' ? 'danh sách hiện tại' : PART_LABELS[currentPartFilter];
+        showToast(`Bạn đã hoàn thành tất cả các câu trong ${partName}!`);
+      }
+    }
+
+    function onSelectLesson() {
+      const select = document.getElementById('lessonSelect');
+      loadLesson(select.value);
+    }
+
+    function togglePlay() {
+      if (player.paused || player.ended) {
+        player.play().catch(e => {
+          showToast('Không thể phát file này. Hãy kiểm tra URL hoặc file tải lên.', 'error');
+        });
+      } else {
+        player.pause();
+      }
+    }
+
+    function updatePlayButtonUI() {
+      const textSpan = playPauseBtn.querySelector('span');
+      if (player.paused) {
+        playIcon.className = "fa-solid fa-play mb-1 text-sm";
+        if (textSpan) textSpan.innerText = "Play";
+        playPauseBtn.classList.replace('bg-amber-600', 'bg-indigo-600');
+      } else {
+        playIcon.className = "fa-solid fa-pause mb-1 text-sm";
+        if (textSpan) textSpan.innerText = "Pause";
+        playPauseBtn.classList.replace('bg-indigo-600', 'bg-amber-600');
+      }
+    }
+
+    player.addEventListener('play', updatePlayButtonUI);
+    player.addEventListener('pause', updatePlayButtonUI);
+
+    function rewind(seconds) {
+      player.currentTime = Math.max(0, player.currentTime - seconds);
+    }
+
+    function forward(seconds) {
+      player.currentTime = Math.min(player.duration || 0, player.currentTime + seconds);
+    }
+
+    function changePlaybackRate() {
+      const rate = parseFloat(document.getElementById('playbackRate').value);
+      player.playbackRate = rate;
+    }
+
+    player.addEventListener('timeupdate', () => {
+      if (!player.duration) return;
+      const progress = (player.currentTime / player.duration) * 100;
+      seekBar.value = progress;
+      currentTimeText.innerText = formatTime(player.currentTime);
+    });
+
+    player.addEventListener('loadedmetadata', () => {
+      durationText.innerText = formatTime(player.duration);
+    });
+
+    seekBar.addEventListener('input', () => {
+      if (!player.duration) return;
+      player.currentTime = (seekBar.value / 100) * player.duration;
+    });
+
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "0:00";
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (!currentUser) return;
+      if ((e.ctrlKey || e.altKey) && e.code === 'Space') {
+        e.preventDefault();
+        togglePlay();
+      } else if (e.altKey && e.code === 'ArrowLeft') {
+        e.preventDefault();
+        rewind(3);
+      } else if (e.altKey && e.code === 'ArrowRight') {
+        e.preventDefault();
+        forward(3);
+      }
+    });
+
+    // Nhấn Enter trong ô gõ để Check (Shift + Enter để xuống dòng ở textarea)
+    function handleInputKeydown(e) {
+      if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        checkDictationResult();
+      }
+    }
+
+    // ==========================================
+    // 5. LẤY DỮ LIỆU GHÉP PART 2 & SO SÁNH TỪNG TỪ
+    // ==========================================
+    function getComposedUserDictation() {
+      if (!isPart2Mode(currentLesson)) {
+        return document.getElementById('userDictationInput').value.trim();
+      }
+
+      const q = document.getElementById('p2QuestionInput').value.trim();
+      const a = document.getElementById('p2OptionAInput').value.trim();
+      const b = document.getElementById('p2OptionBInput').value.trim();
+      const c = document.getElementById('p2OptionCInput').value.trim();
+
+      const segments = [];
+      if (q) segments.push(q);
+      if (a) segments.push(`(A) ${a}`);
+      if (b) segments.push(`(B) ${b}`);
+      if (c) segments.push(`(C) ${c}`);
+
+      return segments.join(' ').trim();
+    }
+
+    function updateWordCount() {
+      const text = getComposedUserDictation();
+      const count = text.length === 0 ? 0 : text.split(/\s+/).length;
+      document.getElementById('wordCountLive').innerText = `${count} từ`;
+    }
+
+    function clearUserInput() {
+      const currentText = getComposedUserDictation();
+      if (currentText.length > 0) {
+        if (confirm("Bạn có chắc muốn xóa nội dung đã gõ?")) {
+          document.getElementById('userDictationInput').value = '';
+          document.getElementById('p2QuestionInput').value = '';
+          document.getElementById('p2OptionAInput').value = '';
+          document.getElementById('p2OptionBInput').value = '';
+          document.getElementById('p2OptionCInput').value = '';
+          updateWordCount();
+          document.getElementById('resultCard').classList.add('hidden');
+
+          if (isPart2Mode(currentLesson)) {
+            document.getElementById('p2QuestionInput').focus();
+          } else {
+            document.getElementById('userDictationInput').focus();
+          }
+        }
+      }
+    }
+
+    function toggleOriginalTranscript() {
+      const box = document.getElementById('originalTranscriptBox');
+      box.classList.toggle('hidden');
+    }
+
+    function cleanToken(word, ignoreCase, ignorePunct) {
+      let res = word;
+      if (ignoreCase) res = res.toLowerCase();
+      if (ignorePunct) {
+        res = res.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"'“”]/g, "");
+      }
+      return res.trim();
+    }
+
+    function maskWord(word) {
+      return word.replace(/[a-zA-Z0-9]/g, '*');
+    }
+
+    function focusAppropriateInputAfterCheck(firstMismatchWord) {
+      if (!isPart2Mode(currentLesson)) {
+        document.getElementById('userDictationInput').focus();
+        return;
+      }
+
+      // Ở chế độ Part 2, tự động đưa con trỏ vào đúng ô đang cần điền/sửa (Question, A, B hoặc C)
+      const q = document.getElementById('p2QuestionInput').value.trim();
+      const a = document.getElementById('p2OptionAInput').value.trim();
+      const b = document.getElementById('p2OptionBInput').value.trim();
+      const c = document.getElementById('p2OptionCInput').value.trim();
+
+      const originalText = currentLesson.transcript;
+      const parts = originalText.split(/\((A|B|C)\)/i);
+      // parts: [questionText, 'A', optAText, 'B', optBText, 'C', optCText]
+      if (parts.length >= 7) {
+        const ignoreCase = document.getElementById('optIgnoreCase').checked;
+        const ignorePunct = document.getElementById('optIgnorePunctuation').checked;
+        const norm = (s) => s.split(/\s+/).filter(Boolean).map(w => cleanToken(w, ignoreCase, ignorePunct)).join(' ');
+
+        if (norm(q) !== norm(parts[0])) {
+          document.getElementById('p2QuestionInput').focus();
+        } else if (norm(a) !== norm(parts[2])) {
+          document.getElementById('p2OptionAInput').focus();
+        } else if (norm(b) !== norm(parts[4])) {
+          document.getElementById('p2OptionBInput').focus();
+        } else if (norm(c) !== norm(parts[6])) {
+          document.getElementById('p2OptionCInput').focus();
+        }
+      } else {
+        document.getElementById('p2QuestionInput').focus();
+      }
+    }
+
+    function checkDictationResult() {
+      if (!currentLesson) return;
+      const userText = getComposedUserDictation();
+
+      const ignoreCase = document.getElementById('optIgnoreCase').checked;
+      const ignorePunct = document.getElementById('optIgnorePunctuation').checked;
+
+      const originalWords = currentLesson.transcript.trim().split(/\s+/).filter(Boolean);
+      const userWords = userText.length === 0 ? [] : userText.split(/\s+/).filter(Boolean);
+
+      // Tìm vị trí từ đầu tiên bị sai hoặc thiếu tính từ trái qua phải
+      let firstMismatchIndex = 0;
+      while (firstMismatchIndex < originalWords.length && firstMismatchIndex < userWords.length) {
+        const origClean = cleanToken(originalWords[firstMismatchIndex], ignoreCase, ignorePunct);
+        const userClean = cleanToken(userWords[firstMismatchIndex], ignoreCase, ignorePunct);
+
+        if (origClean === userClean && origClean !== "") {
+          firstMismatchIndex++;
+        } else {
+          break;
+        }
+      }
+
+      const diffContainer = document.getElementById('diffContainer');
+      diffContainer.innerHTML = '';
+
+      originalWords.forEach((word, idx) => {
+        const span = document.createElement('span');
+
+        if (idx < firstMismatchIndex) {
+          span.className = "inline-block px-2 py-0.5 rounded-lg text-sm bg-emerald-100 text-emerald-800 font-semibold border border-emerald-200";
+          span.innerText = word;
+        } else if (idx === firstMismatchIndex) {
+          const userTypedAtError = userWords[idx] ? ` (Bạn gõ: "${userWords[idx]}")` : " (Bạn đang thiếu từ này)";
+          span.className = "inline-block px-2.5 py-0.5 rounded-lg text-sm bg-amber-100 text-amber-900 font-bold border-2 border-amber-400 shadow-sm animate-pulse";
+          span.innerText = word;
+          span.title = `Từ gợi ý tiếp theo${userTypedAtError}`;
+        } else {
+          span.className = "inline-block px-2 py-0.5 rounded-lg text-sm bg-slate-200/80 text-slate-400 font-mono tracking-wider select-none border border-slate-300/60";
+          span.innerText = maskWord(word);
+          span.title = "Hãy sửa đúng từ gợi ý trước đó để mở khóa từ này";
+        }
+
+        diffContainer.appendChild(span);
+      });
+
+      const totalWords = originalWords.length;
+      const percent = totalWords > 0 ? Math.round((firstMismatchIndex / totalWords) * 100) : 0;
+
+      document.getElementById('progressText').innerText = `${firstMismatchIndex} / ${totalWords}`;
+      document.getElementById('progressBarFill').style.width = `${percent}%`;
+
+      const statusTitle = document.getElementById('resultStatusTitle');
+      const statusDesc = document.getElementById('resultStatusDesc');
+      const nextResultBtn = document.getElementById('nextLessonResultBtn');
+      const nextTopBtn = document.getElementById('nextLessonTopBtn');
+
+      const list = getFilteredLessons();
+      const curIdx = list.findIndex(l => l.id === currentLesson.id);
+      const hasNextLesson = curIdx >= 0 && curIdx < list.length - 1;
+
+      if (firstMismatchIndex === totalWords) {
+        statusTitle.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> Hoàn thành xuất sắc!`;
+        if (hasNextLesson) {
+          statusDesc.innerText = "Bạn đã chép chính xác 100%! Bấm 'Câu tiếp theo (Next)' để tiếp tục luyện.";
+          nextResultBtn.classList.remove('hidden');
+          nextTopBtn.className = "px-4 py-2 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-200 transition flex items-center gap-1.5 next-btn-highlight";
+        } else {
+          const partName = currentPartFilter === 'all' ? 'danh sách này' : PART_LABELS[currentPartFilter];
+          statusDesc.innerText = `Tuyệt vời! Bạn đã hoàn thành câu cuối cùng của ${partName}.`;
+          nextResultBtn.classList.add('hidden');
+        }
+        showToast('Chúc mừng! Bạn đã hoàn thành chính xác 100% câu này!');
+      } else {
+        nextResultBtn.classList.add('hidden');
+        updateNavigationButtonsState();
+
+        const wrongInputNote = userWords[firstMismatchIndex] 
+          ? `Bạn đã gõ <span class="font-semibold text-rose-600 line-through">"${escapeHtml(userWords[firstMismatchIndex])}"</span> — ` 
+          : '';
+        statusTitle.innerHTML = `<i class="fa-solid fa-lightbulb text-amber-500"></i> Gợi ý từ thứ ${firstMismatchIndex + 1}`;
+        statusDesc.innerHTML = `${wrongInputNote}Hãy sửa thành <span class="font-bold text-amber-700">"${escapeHtml(originalWords[firstMismatchIndex])}"</span> trong ô gõ rồi nhấn <b>Enter</b> hoặc <b>Check</b>.`;
+      }
+
+      const resultCard = document.getElementById('resultCard');
+      resultCard.classList.remove('hidden');
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      if (firstMismatchIndex === totalWords && hasNextLesson) {
+        nextResultBtn.focus();
+      } else {
+        focusAppropriateInputAfterCheck(originalWords[firstMismatchIndex]);
+      }
+    }
+
+    // ==========================================
+    // 6. QUẢN LÝ BÀI HỌC (ADMIN ONLY)
+    // ==========================================
+    function renderLessonSelect() {
+      const select = document.getElementById('lessonSelect');
+      select.innerHTML = '';
+      const filtered = getFilteredLessons();
+
+      if (filtered.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = '-- Chưa có bài nghe trong phần này --';
+        select.appendChild(opt);
+      } else {
+        filtered.forEach((l, index) => {
+          const opt = document.createElement('option');
+          opt.value = l.id;
+          const pTag = PART_LABELS[l.part] ? `[${PART_LABELS[l.part]}] ` : '';
+          opt.textContent = `${index + 1}. ${pTag}${l.title} (${l.mediaType.toUpperCase()})`;
+          select.appendChild(opt);
+        });
+      }
+      document.getElementById('lessonCountBadge').innerText = `${filtered.length} bài`;
+    }
+
+    function renderLessonTable() {
+      const tbody = document.getElementById('lessonTableBody');
+      tbody.innerHTML = '';
+
+      if (lessons.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400 italic">Chưa có bài học nào. Hãy tạo bài học đầu tiên bên trên!</td></tr>`;
+        return;
+      }
+
+      const partBadgeStyles = {
+        part1: 'bg-sky-100 text-sky-700 border-sky-200',
+        part2: 'bg-indigo-100 text-indigo-700 border-indigo-200',
+        part3: 'bg-amber-100 text-amber-800 border-amber-200',
+        part4: 'bg-emerald-100 text-emerald-700 border-emerald-200'
+      };
+
+      lessons.forEach((l) => {
+        const wordCount = l.transcript.trim().split(/\s+/).length;
+        const pKey = l.part || 'part1';
+        const pStyle = partBadgeStyles[pKey] || 'bg-slate-100 text-slate-700 border-slate-200';
+        const sourceBadge = l.isLocalFile 
+          ? `<span class="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded ml-1"><i class="fa-solid fa-hard-drive mr-1"></i>File máy tính</span>`
+          : `<span class="text-[11px] text-slate-600 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded ml-1"><i class="fa-solid fa-link mr-1"></i>URL</span>`;
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-semibold text-slate-800">
+            <div>${escapeHtml(l.title)}</div>
+            <div class="text-xs text-slate-400 font-normal truncate max-w-xs">${escapeHtml(l.desc || '')}</div>
+          </td>
+          <td class="py-3 px-4 whitespace-nowrap">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${pStyle}">
+              ${PART_LABELS[pKey] || 'Part 1'}
+            </span>
+          </td>
+          <td class="py-3 px-4 whitespace-nowrap">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${l.mediaType === 'video' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}">
+              <i class="fa-solid ${l.mediaType === 'video' ? 'fa-video' : 'fa-music'} mr-1 text-[10px]"></i>
+              ${l.mediaType.toUpperCase()}
+            </span>
+            ${sourceBadge}
+          </td>
+          <td class="py-3 px-4 text-xs font-medium text-slate-600">${wordCount} từ</td>
+          <td class="py-3 px-4 text-right whitespace-nowrap space-x-1">
+            <button onclick="quickPractice('${l.id}')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 py-1 px-2.5 rounded-lg hover:bg-indigo-50 transition" title="Luyện bài này ngay">
+              <i class="fa-solid fa-play mr-1"></i> Luyện
+            </button>
+            <button onclick="startEditLesson('${l.id}')" class="text-xs font-semibold text-amber-600 hover:text-amber-800 py-1 px-2.5 rounded-lg hover:bg-amber-50 transition" title="Đổi tên / Chỉnh sửa bài học">
+              <i class="fa-solid fa-pen-to-square mr-1"></i> Sửa
+            </button>
+            <button onclick="deleteLesson('${l.id}')" class="text-xs text-slate-400 hover:text-rose-600 py-1 px-2 rounded-lg hover:bg-rose-50 transition" title="Xóa bài học">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function quickPractice(id) {
+      const target = lessons.find(l => l.id === id);
+      switchTab('learner');
+      if (target && currentPartFilter !== 'all' && target.part !== currentPartFilter) {
+        await selectPartFilter(target.part);
+      }
+      await loadLesson(id);
+    }
+
+    function startEditLesson(id) {
+      if (!currentUser || currentUser.role !== 'admin') return;
+      const lesson = lessons.find(l => l.id === id);
+      if (!lesson) return;
+
+      document.getElementById('editingLessonId').value = lesson.id;
+      document.getElementById('inputLessonTitle').value = lesson.title;
+      document.getElementById('inputLessonPart').value = lesson.part || detectLessonPart(lesson);
+      document.getElementById('inputLessonDesc').value = lesson.desc || '';
+      document.getElementById('inputTranscript').value = lesson.transcript;
+
+      uploadedFileObject = null;
+      document.getElementById('inputFile').value = '';
+
+      const status = document.getElementById('mediaPreviewStatus');
+      if (lesson.isLocalFile) {
+        document.getElementById('inputMediaUrl').value = '';
+        document.getElementById('fileUploadName').innerText = `Đang dùng file đã lưu: ${lesson.fileName || 'File nội bộ'}`;
+        document.getElementById('fileUploadName').classList.add('text-emerald-600', 'font-medium');
+        status.innerText = `Giữ nguyên file đã lưu trong trình duyệt (hoặc chọn file/URL mới bên trên để thay thế)`;
+        status.classList.remove('hidden');
+      } else {
+        document.getElementById('inputMediaUrl').value = lesson.mediaUrl || '';
+        document.getElementById('fileUploadName').innerText = "Hỗ trợ MP3, WAV, MP4, WebM";
+        document.getElementById('fileUploadName').classList.remove('text-indigo-600', 'text-emerald-600', 'font-medium');
+        status.innerText = `Đang sử dụng URL trực tuyến`;
+        status.classList.remove('hidden');
+      }
+
+      document.getElementById('lessonFormCard').classList.add('ring-2', 'ring-amber-400');
+      document.getElementById('formHeaderIcon').className = "w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold";
+      document.getElementById('formHeaderIcon').innerHTML = `<i class="fa-solid fa-pen"></i>`;
+      document.getElementById('formHeaderTitle').innerText = "Chỉnh sửa bài học";
+      document.getElementById('formHeaderSubtitle').innerText = `Đang chỉnh sửa: "${lesson.title}"`;
+      document.getElementById('cancelEditBtn').classList.remove('hidden');
+      document.getElementById('submitLessonBtn').className = "px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-sm shadow-md shadow-amber-200 transition";
+      document.getElementById('submitLessonBtn').innerHTML = `<i class="fa-solid fa-floppy-disk mr-1.5"></i> Cập nhật bài học`;
+
+      document.getElementById('lessonFormCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function resetFormState() {
+      document.getElementById('createLessonForm').reset();
+      document.getElementById('editingLessonId').value = '';
+      document.getElementById('inputLessonPart').value = 'part2';
+      uploadedFileObject = null;
+
+      document.getElementById('fileUploadName').innerText = "Hỗ trợ MP3, WAV, MP4, WebM";
+      document.getElementById('fileUploadName').classList.remove('text-indigo-600', 'text-emerald-600', 'font-medium');
+      document.getElementById('mediaPreviewStatus').classList.add('hidden');
+
+      document.getElementById('lessonFormCard').classList.remove('ring-2', 'ring-amber-400');
+      document.getElementById('formHeaderIcon').className = "w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold";
+      document.getElementById('formHeaderIcon').innerHTML = `<i class="fa-solid fa-plus"></i>`;
+      document.getElementById('formHeaderTitle').innerText = "Thêm bài nghe TOEIC mới";
+      document.getElementById('formHeaderSubtitle').innerText = "Chọn đúng Part TOEIC (Part 1–4), tải tệp từ máy tính hoặc dán đường dẫn URL";
+      document.getElementById('cancelEditBtn').classList.add('hidden');
+      document.getElementById('submitLessonBtn').className = "px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-md shadow-indigo-200 transition";
+      document.getElementById('submitLessonBtn').innerHTML = `<i class="fa-solid fa-cloud-check mr-1.5"></i> Lưu bài học mới`;
+    }
+
+    async function deleteLesson(id) {
+      if (!currentUser || currentUser.role !== 'admin') return;
+      if (confirm("Bạn có chắc chắn muốn xóa bài học này không?")) {
+        const target = lessons.find(l => l.id === id);
+        if (target && target.isLocalFile) {
+          await deleteMediaFromDB(id).catch(() => {});
+        }
+        lessons = lessons.filter(l => l.id !== id);
+        saveLessons();
+        renderLessonSelect();
+        renderLessonTable();
+        if (document.getElementById('editingLessonId').value === id) {
+          resetFormState();
+        }
+        if (currentLesson && currentLesson.id === id) {
+          const filtered = getFilteredLessons();
+          if (filtered.length > 0) await loadLesson(filtered[0].id);
+        }
+        showToast('Đã xóa bài học.');
+      }
+    }
+
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      uploadedFileObject = file;
+      const fileType = file.type.startsWith('video') ? 'video' : 'audio';
+
+      document.getElementById('inputMediaUrl').value = '';
+      document.getElementById('fileUploadName').innerText = `Đã chọn: ${file.name}`;
+      document.getElementById('fileUploadName').classList.remove('text-emerald-600');
+      document.getElementById('fileUploadName').classList.add('text-indigo-600', 'font-medium');
+      
+      const status = document.getElementById('mediaPreviewStatus');
+      status.innerText = `Sẵn sàng lưu tệp (${fileType.toUpperCase()} - ${(file.size / (1024*1024)).toFixed(2)} MB): ${file.name}`;
+      status.classList.remove('hidden');
+    }
+
+    function handleUrlInput() {
+      const url = document.getElementById('inputMediaUrl').value.trim();
+      if (url) {
+        uploadedFileObject = null;
+        document.getElementById('inputFile').value = '';
+        document.getElementById('fileUploadName').innerText = "Hỗ trợ MP3, WAV, MP4, WebM";
+        document.getElementById('fileUploadName').classList.remove('text-indigo-600', 'text-emerald-600', 'font-medium');
+        const status = document.getElementById('mediaPreviewStatus');
+        status.innerText = `Sử dụng URL trực tuyến`;
+        status.classList.remove('hidden');
+      }
+    }
+
+    function formatScriptInput() {
+      const input = document.getElementById('inputTranscript');
+      input.value = input.value.replace(/\s+/g, ' ').trim();
+      showToast('Đã chuẩn hóa khoảng trắng transcript.');
+    }
+
+    async function handleSaveLesson(e) {
+      e.preventDefault();
+      if (!currentUser || currentUser.role !== 'admin') return;
+
+      const editingId = document.getElementById('editingLessonId').value;
+      const title = document.getElementById('inputLessonTitle').value.trim();
+      const part = document.getElementById('inputLessonPart').value;
+      const desc = document.getElementById('inputLessonDesc').value.trim();
+      const transcript = document.getElementById('inputTranscript').value.trim();
+      const directUrl = document.getElementById('inputMediaUrl').value.trim();
+
+      if (editingId) {
+        const index = lessons.findIndex(l => l.id === editingId);
+        if (index === -1) return;
+        const existing = lessons[index];
+
+        let finalMediaUrl = existing.mediaUrl;
+        let finalMediaType = existing.mediaType;
+        let isLocalFile = existing.isLocalFile;
+        let fileName = existing.fileName || '';
+
+        if (uploadedFileObject) {
+          await saveMediaToDB(editingId, uploadedFileObject);
+          finalMediaUrl = '';
+          finalMediaType = uploadedFileObject.type.startsWith('video') ? 'video' : 'audio';
+          isLocalFile = true;
+          fileName = uploadedFileObject.name;
+        } else if (directUrl) {
+          if (existing.isLocalFile) {
+            await deleteMediaFromDB(editingId).catch(() => {});
+          }
+          finalMediaUrl = directUrl;
+          finalMediaType = /\.(mp4|webm|ogg|mov)$/i.test(directUrl) ? 'video' : 'audio';
+          isLocalFile = false;
+          fileName = '';
+        }
+
+        lessons[index] = {
+          ...existing,
+          title,
+          part,
+          desc,
+          transcript,
+          mediaUrl: finalMediaUrl,
+          mediaType: finalMediaType,
+          isLocalFile,
+          fileName
+        };
+
+        saveLessons();
+        renderLessonSelect();
+        renderLessonTable();
+        resetFormState();
+
+        if (currentLesson && currentLesson.id === editingId) {
+          await loadLesson(editingId);
+        }
+        showToast('Đã cập nhật bài học thành công!');
+        return;
+      }
+
+      const newId = 'lesson-' + Date.now();
+      let finalMediaUrl = '';
+      let finalMediaType = 'audio';
+      let isLocalFile = false;
+      let fileName = '';
+
+      if (uploadedFileObject) {
+        try {
+          await saveMediaToDB(newId, uploadedFileObject);
+          finalMediaType = uploadedFileObject.type.startsWith('video') ? 'video' : 'audio';
+          isLocalFile = true;
+          fileName = uploadedFileObject.name;
+        } catch (err) {
+          showToast('Lỗi lưu file vào trình duyệt. Hãy thử lại!', 'error');
+          return;
+        }
+      } else if (directUrl) {
+        finalMediaUrl = directUrl;
+        finalMediaType = /\.(mp4|webm|ogg|mov)$/i.test(directUrl) ? 'video' : 'audio';
+        isLocalFile = false;
+      } else {
+        showToast('Vui lòng tải lên tệp hoặc dán liên kết URL tệp nghe!', 'error');
+        return;
+      }
+
+      const newLesson = {
+        id: newId,
+        part,
+        title,
+        desc,
+        transcript,
+        mediaUrl: finalMediaUrl,
+        mediaType: finalMediaType,
+        isLocalFile,
+        fileName
+      };
+
+      lessons.unshift(newLesson);
+      saveLessons();
+      renderLessonSelect();
+      renderLessonTable();
+      resetFormState();
+
+      showToast('Thêm bài học mới thành công!');
+      setTimeout(() => {
+        quickPractice(newLesson.id);
+      }, 400);
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      const toastIcon = document.getElementById('toastIcon');
+
+      toastMessage.innerText = msg;
+      if (type === 'error') {
+        toastIcon.className = "fa-solid fa-circle-exclamation text-rose-400";
+      } else if (type === 'info') {
+        toastIcon.className = "fa-solid fa-circle-info text-sky-400";
+      } else {
+        toastIcon.className = "fa-solid fa-circle-check text-emerald-400";
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3200);
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          "'": '&#39;',
+          '"': '&quot;'
+        }[tag] || tag)
+      );
+    }
+
+    window.onload = function() {
+      initAuth();
+    };
+  </script>
+</body>
+</html>
