@@ -72,7 +72,7 @@
           <i class="fa-solid fa-circle-exclamation mr-1"></i> Sai tên đăng nhập hoặc mật khẩu!
         </p>
 
-        <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-md shadow-indigo-200 transition active:scale-95">
+        <button type="submit" id="loginSubmitBtn" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-md shadow-indigo-200 transition active:scale-95">
           Đăng nhập
         </button>
       </form>
@@ -416,8 +416,8 @@
                 <i class="fa-brands fa-github text-lg"></i>
               </div>
               <div>
-                <h3 class="text-sm font-bold text-white">Tự động lưu vĩnh viễn lên GitHub (Đồng bộ mọi thiết bị)</h3>
-                <p class="text-[11px] text-indigo-200/80">Mỗi khi thêm/sửa/xóa bài học bên dưới, hệ thống tự động cập nhật lên repo GitHub của bạn.</p>
+                <h3 class="text-sm font-bold text-white">Tự động lưu vĩnh viễn lên GitHub (Bài học & Tài khoản User)</h3>
+                <p class="text-[11px] text-indigo-200/80">Mỗi khi thêm/sửa/xóa bài học hoặc tài khoản/mật khẩu, hệ thống tự động lưu lên repo GitHub của bạn.</p>
               </div>
             </div>
             <span id="githubConfigStatusBadge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">
@@ -428,7 +428,7 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-wider text-indigo-200 mb-1">GitHub Repo (owner/repo) *</label>
-              <input type="text" id="ghRepoInput" placeholder="VD: longhua1801/longhua1801.github.io" class="w-full text-xs px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-indigo-300/50 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+              <input type="text" id="ghRepoInput" placeholder="VD: longhua1801/dictation-master" class="w-full text-xs px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-indigo-300/50 focus:outline-none focus:ring-2 focus:ring-indigo-400">
             </div>
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-wider text-indigo-200 mb-1">File dữ liệu trên Repo *</label>
@@ -442,10 +442,10 @@
 
           <div class="flex flex-wrap items-center justify-between gap-2 mt-3 pt-3 border-t border-white/10">
             <span class="text-[11px] text-indigo-200/75">
-              <i class="fa-solid fa-shield-halved mr-1"></i> Token chỉ lưu an toàn trên trình duyệt của bạn, không đẩy lên GitHub.
+              <i class="fa-solid fa-shield-halved mr-1"></i> Tự động lưu cả <code class="text-indigo-200">lessons.json</code> và <code class="text-indigo-200">users.json</code> lên GitHub.
             </span>
             <div class="flex items-center gap-2">
-              <button type="button" onclick="pullLessonsFromGitHub(true)" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition">
+              <button type="button" onclick="pullAllFromGitHub(true)" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition">
                 <i class="fa-solid fa-cloud-arrow-down mr-1"></i> Tải từ GitHub về
               </button>
               <button type="button" onclick="saveGitHubConfigAndSync()" class="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow transition">
@@ -566,13 +566,15 @@
       <!-- TAB 3: QUẢN LÝ TÀI KHOẢN USER (CHỈ DÀNH CHO ADMIN) -->
       <div id="tabUsers" class="hidden max-w-4xl mx-auto space-y-6">
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-          <div class="flex items-center space-x-3 mb-5 border-b border-slate-100 pb-4">
-            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-              <i class="fa-solid fa-user-plus"></i>
-            </div>
-            <div>
-              <h2 class="text-base font-bold text-slate-900">Đăng ký tài khoản mới</h2>
-              <p class="text-xs text-slate-500">Tạo tài khoản cho học viên vào luyện nghe hoặc thêm quản trị viên</p>
+          <div class="flex items-center justify-between mb-5 border-b border-slate-100 pb-4">
+            <div class="flex items-center space-x-3">
+              <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                <i class="fa-solid fa-user-plus"></i>
+              </div>
+              <div>
+                <h2 class="text-base font-bold text-slate-900">Đăng ký tài khoản mới</h2>
+                <p class="text-xs text-slate-500">Tạo tài khoản cho học viên hoặc quản trị viên (tự động lưu lên GitHub nếu đã kết nối)</p>
+              </div>
             </div>
           </div>
 
@@ -597,7 +599,7 @@
               </select>
             </div>
             <div class="md:col-span-4 flex justify-end pt-2">
-              <button type="submit" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-md shadow-emerald-200 transition">
+              <button type="submit" id="createUserSubmitBtn" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-md shadow-emerald-200 transition">
                 <i class="fa-solid fa-user-check mr-1.5"></i> Tạo tài khoản
               </button>
             </div>
@@ -710,6 +712,8 @@
       part4: 'Part 4'
     };
 
+    const USERS_JSON_PATH = 'users.json';
+
     let users = [];
     let currentUser = null;
     let lessons = [];
@@ -719,20 +723,28 @@
     let currentActiveObjectUrl = null;
 
     // ==========================================
-    // 1. QUẢN LÝ ĐĂNG NHẬP & PHÂN QUYỀN USER
+    // 1. QUẢN LÝ ĐĂNG NHẬP & PHÂN QUYỀN USER (ĐỒNG BỘ GITHUB)
     // ==========================================
-    function initAuth() {
+    async function initAuth() {
+      // 1. Tải trước từ bộ nhớ cục bộ để phản hồi tức thì
       const storedUsers = localStorage.getItem('dictation_users');
+      const dbUsersBackup = await getMetadataFromDB('users_backup');
+
       if (storedUsers) {
         try {
           users = JSON.parse(storedUsers);
         } catch (e) {
-          users = JSON.parse(JSON.stringify(DEFAULT_USERS));
+          users = dbUsersBackup || JSON.parse(JSON.stringify(DEFAULT_USERS));
         }
+      } else if (dbUsersBackup && Array.isArray(dbUsersBackup) && dbUsersBackup.length > 0) {
+        users = dbUsersBackup;
       } else {
         users = JSON.parse(JSON.stringify(DEFAULT_USERS));
-        saveUsers();
       }
+
+      // 2. Đồng bộ danh sách User mới nhất từ GitHub / users.json
+      await pullUsersFromGitHub(false);
+      await persistUsersLocallyOnly();
 
       const savedSession = sessionStorage.getItem('dictation_current_user');
       if (savedSession) {
@@ -747,29 +759,52 @@
       }
     }
 
-    function saveUsers() {
-      localStorage.setItem('dictation_users', JSON.stringify(users));
+    async function persistUsersLocallyOnly() {
+      try {
+        localStorage.setItem('dictation_users', JSON.stringify(users));
+      } catch (e) {}
+      await saveMetadataToDB('users_backup', users);
     }
 
-    function handleLogin(e) {
+    async function saveUsers(syncToCloud = true) {
+      await persistUsersLocallyOnly();
+      if (syncToCloud && currentUser && currentUser.role === 'admin') {
+        await pushUsersToGitHub(true);
+      }
+    }
+
+    async function handleLogin(e) {
       e.preventDefault();
       const usernameInput = document.getElementById('loginUsername').value.trim();
       const passwordInput = document.getElementById('loginPassword').value.trim();
       const errorMsg = document.getElementById('loginErrorMsg');
+      const loginBtn = document.getElementById('loginSubmitBtn');
 
-      const matchedUser = users.find(
-        u => u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput
-      );
+      loginBtn.disabled = true;
+      loginBtn.innerText = 'Đang kiểm tra...';
 
-      if (!matchedUser) {
-        errorMsg.classList.remove('hidden');
-        return;
+      try {
+        // Luôn kiểm tra bản users.json mới nhất trên GitHub trước khi xác thực
+        await pullUsersFromGitHub(false);
+        await persistUsersLocallyOnly();
+
+        const matchedUser = users.find(
+          u => u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput
+        );
+
+        if (!matchedUser) {
+          errorMsg.classList.remove('hidden');
+          return;
+        }
+
+        errorMsg.classList.add('hidden');
+        sessionStorage.setItem('dictation_current_user', JSON.stringify(matchedUser));
+        loginSuccess(matchedUser);
+        showToast(`Xin chào, ${matchedUser.fullName}!`);
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.innerText = 'Đăng nhập';
       }
-
-      errorMsg.classList.add('hidden');
-      sessionStorage.setItem('dictation_current_user', JSON.stringify(matchedUser));
-      loginSuccess(matchedUser);
-      showToast(`Xin chào, ${matchedUser.fullName}!`);
     }
 
     async function loginSuccess(user) {
@@ -813,7 +848,7 @@
       showToast('Đã đăng xuất khỏi hệ thống.', 'info');
     }
 
-    function handleCreateUser(e) {
+    async function handleCreateUser(e) {
       e.preventDefault();
       if (!currentUser || currentUser.role !== 'admin') return;
 
@@ -827,27 +862,37 @@
         return;
       }
 
-      const newUser = {
-        id: 'user-' + Date.now(),
-        fullName,
-        username,
-        password,
-        role
-      };
+      const btn = document.getElementById('createUserSubmitBtn');
+      btn.disabled = true;
 
-      users.push(newUser);
-      saveUsers();
-      renderUserTable();
+      try {
+        const newUser = {
+          id: 'user-' + Date.now(),
+          fullName,
+          username,
+          password,
+          role
+        };
 
-      document.getElementById('newUserFullName').value = '';
-      document.getElementById('newUserUsername').value = '';
-      document.getElementById('newUserPassword').value = '';
-      document.getElementById('newUserRole').value = 'user';
+        users.push(newUser);
+        await saveUsers(true);
+        renderUserTable();
 
-      showToast(`Đã tạo tài khoản "${username}" thành công!`);
+        document.getElementById('newUserFullName').value = '';
+        document.getElementById('newUserUsername').value = '';
+        document.getElementById('newUserPassword').value = '';
+        document.getElementById('newUserRole').value = 'user';
+
+        const hasCloud = !!getGitHubConfig();
+        if (!hasCloud) {
+          showToast(`Đã tạo tài khoản "${username}" (Chưa kết nối GitHub nên chỉ lưu trên máy này)!`, 'info');
+        }
+      } finally {
+        btn.disabled = false;
+      }
     }
 
-    function changeUserPassword(userId) {
+    async function changeUserPassword(userId) {
       if (!currentUser || currentUser.role !== 'admin') return;
       const target = users.find(u => u.id === userId);
       if (!target) return;
@@ -855,13 +900,22 @@
       const newPass = prompt(`Nhập mật khẩu mới cho tài khoản "${target.username}":`, target.password);
       if (newPass !== null && newPass.trim() !== '') {
         target.password = newPass.trim();
-        saveUsers();
+        await saveUsers(true);
         renderUserTable();
-        showToast(`Đã đổi mật khẩu cho ${target.username}.`);
+
+        if (currentUser.id === target.id) {
+          currentUser.password = target.password;
+          sessionStorage.setItem('dictation_current_user', JSON.stringify(currentUser));
+        }
+
+        const hasCloud = !!getGitHubConfig();
+        if (!hasCloud) {
+          showToast(`Đã đổi mật khẩu cho ${target.username} trên máy này.`, 'info');
+        }
       }
     }
 
-    function deleteUser(userId) {
+    async function deleteUser(userId) {
       if (!currentUser || currentUser.role !== 'admin') return;
       if (userId === 'user-admin-root') {
         showToast('Không thể xóa tài khoản Admin gốc!', 'error');
@@ -875,9 +929,11 @@
       const target = users.find(u => u.id === userId);
       if (target && confirm(`Bạn có chắc muốn xóa tài khoản "${target.username}"?`)) {
         users = users.filter(u => u.id !== userId);
-        saveUsers();
+        await saveUsers(true);
         renderUserTable();
-        showToast('Đã xóa tài khoản.');
+        if (!getGitHubConfig()) {
+          showToast('Đã xóa tài khoản.');
+        }
       }
     }
 
@@ -939,12 +995,12 @@
       });
     }
 
-    async function saveLessonsBackupToDB(lessonArray) {
+    async function saveMetadataToDB(key, data) {
       try {
         const db = await openDB();
         return new Promise((resolve) => {
           const tx = db.transaction(META_STORE_NAME, 'readwrite');
-          tx.objectStore(META_STORE_NAME).put(lessonArray, 'lessons_backup');
+          tx.objectStore(META_STORE_NAME).put(data, key);
           tx.oncomplete = () => resolve(true);
           tx.onerror = () => resolve(false);
         });
@@ -953,12 +1009,12 @@
       }
     }
 
-    async function getLessonsBackupFromDB() {
+    async function getMetadataFromDB(key) {
       try {
         const db = await openDB();
         return new Promise((resolve) => {
           const tx = db.transaction(META_STORE_NAME, 'readonly');
-          const req = tx.objectStore(META_STORE_NAME).get('lessons_backup');
+          const req = tx.objectStore(META_STORE_NAME).get(key);
           req.onsuccess = () => resolve(req.result || null);
           req.onerror = () => resolve(null);
         });
@@ -998,7 +1054,7 @@
     }
 
     // ==========================================
-    // 2B. ĐỒNG BỘ TỰ ĐỘNG VỚI GITHUB API (LƯU VĨNH VIỄN TRÊN CLOUD)
+    // 2B. ĐỒNG BỘ TỰ ĐỘNG VỚI GITHUB API (LESSONS.JSON & USERS.JSON)
     // ==========================================
     function getGitHubConfig() {
       try {
@@ -1072,7 +1128,12 @@
 
       localStorage.setItem('dictation_github_config', JSON.stringify({ repo, path, token }));
       loadGitHubConfigUI();
-      await pushLessonsToGitHub(true);
+
+      const okLessons = await pushLessonsToGitHub(false);
+      const okUsers = await pushUsersToGitHub(false);
+      if (okLessons && okUsers) {
+        showToast(`Đã đồng bộ vĩnh viễn cả bài học (${lessons.length}) và tài khoản (${users.length}) lên GitHub!`);
+      }
     }
 
     function utf8ToBase64(str) {
@@ -1093,12 +1154,11 @@
       return new TextDecoder().decode(bytes);
     }
 
-    async function pushLessonsToGitHub(showSuccessToast = false) {
+    async function pushJsonFileToGitHub(filePath, dataObj, commitMsg) {
       const cfg = getGitHubConfig();
       if (!cfg || !cfg.repo || !cfg.token) return false;
 
-      const path = cfg.path || 'lessons.json';
-      const apiUrl = `https://api.github.com/repos/${cfg.repo}/contents/${path}`;
+      const apiUrl = `https://api.github.com/repos/${cfg.repo}/contents/${filePath}`;
       const headers = {
         'Authorization': `Bearer ${cfg.token}`,
         'Accept': 'application/vnd.github+json',
@@ -1108,7 +1168,6 @@
       updateCloudSyncHeaderBadge('syncing');
 
       try {
-        // Lấy SHA hiện tại của file trên GitHub (nếu file đã tồn tại)
         let sha = null;
         const getRes = await fetch(apiUrl, { headers, cache: 'no-store' });
         if (getRes.ok) {
@@ -1119,12 +1178,9 @@
           throw new Error(errData.message || `HTTP ${getRes.status}`);
         }
 
-        // Chỉ đẩy các bài dùng URL trực tuyến lên GitHub (bỏ qua file local trên ổ cứng)
-        const syncableLessons = lessons.filter(l => !l.isLocalFile);
-        const jsonContent = JSON.stringify(syncableLessons, null, 2);
         const body = {
-          message: `Update TOEIC lessons (${syncableLessons.length} items) via DictationMaster`,
-          content: utf8ToBase64(jsonContent)
+          message: commitMsg,
+          content: utf8ToBase64(JSON.stringify(dataObj, null, 2))
         };
         if (sha) body.sha = sha;
 
@@ -1140,15 +1196,84 @@
         }
 
         updateCloudSyncHeaderBadge();
-        if (showSuccessToast) {
-          showToast(`Đã lưu vĩnh viễn ${syncableLessons.length} bài học lên GitHub!`);
-        }
         return true;
       } catch (err) {
         updateCloudSyncHeaderBadge();
-        showToast(`Lỗi đồng bộ GitHub: ${err.message}`, 'error');
+        showToast(`Lỗi đồng bộ GitHub (${filePath}): ${err.message}`, 'error');
         return false;
       }
+    }
+
+    async function pushLessonsToGitHub(showSuccessToast = false) {
+      const cfg = getGitHubConfig();
+      if (!cfg || !cfg.repo || !cfg.token) return false;
+      const path = cfg.path || 'lessons.json';
+      const syncableLessons = lessons.filter(l => !l.isLocalFile);
+      const ok = await pushJsonFileToGitHub(
+        path,
+        syncableLessons,
+        `Update TOEIC lessons (${syncableLessons.length} items) via DictationMaster`
+      );
+      if (ok && showSuccessToast) {
+        showToast(`Đã lưu vĩnh viễn ${syncableLessons.length} bài học lên GitHub!`);
+      }
+      return ok;
+    }
+
+    async function pushUsersToGitHub(showSuccessToast = false) {
+      const cfg = getGitHubConfig();
+      if (!cfg || !cfg.repo || !cfg.token) return false;
+      const ok = await pushJsonFileToGitHub(
+        USERS_JSON_PATH,
+        users,
+        `Update users (${users.length} accounts) via DictationMaster`
+      );
+      if (ok && showSuccessToast) {
+        showToast(`Đã lưu vĩnh viễn danh sách tài khoản & mật khẩu lên GitHub!`);
+      }
+      return ok;
+    }
+
+    async function fetchJsonFromGitHubOrStatic(filePath) {
+      const cfg = getGitHubConfig();
+      // 1. Ưu tiên đọc qua GitHub API nếu đã cấu hình Token (không bị cache)
+      if (cfg && cfg.repo && cfg.token) {
+        const apiUrl = `https://api.github.com/repos/${cfg.repo}/contents/${filePath}`;
+        const res = await fetch(apiUrl, {
+          headers: {
+            'Authorization': `Bearer ${cfg.token}`,
+            'Accept': 'application/vnd.github+json'
+          },
+          cache: 'no-store'
+        });
+        if (res.ok) {
+          const data = await res.json();
+          return JSON.parse(base64ToUtf8(data.content));
+        }
+      }
+
+      // 2. Đọc file tĩnh từ GitHub Pages (cho thiết bị khác / màn hình đăng nhập chưa nhập Token)
+      const staticRes = await fetch(`./${filePath}?t=${Date.now()}`, { cache: 'no-store' });
+      if (staticRes.ok) {
+        return await staticRes.json();
+      }
+      return null;
+    }
+
+    async function pullUsersFromGitHub(notify = false) {
+      try {
+        const parsed = await fetchJsonFromGitHubOrStatic(USERS_JSON_PATH);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          users = parsed;
+          await persistUsersLocallyOnly();
+          if (notify) {
+            renderUserTable();
+            showToast(`Đã tải ${users.length} tài khoản từ GitHub!`);
+          }
+          return true;
+        }
+      } catch (e) {}
+      return false;
     }
 
     async function pullLessonsFromGitHub(notify = false) {
@@ -1156,55 +1281,44 @@
       const filePath = (cfg && cfg.path) ? cfg.path : 'lessons.json';
 
       try {
-        // 1. Ưu tiên đọc qua GitHub API (không bị cache CDN) nếu có Token
-        if (cfg && cfg.repo && cfg.token) {
-          const apiUrl = `https://api.github.com/repos/${cfg.repo}/contents/${filePath}`;
-          const res = await fetch(apiUrl, {
-            headers: {
-              'Authorization': `Bearer ${cfg.token}`,
-              'Accept': 'application/vnd.github+json'
-            },
-            cache: 'no-store'
-          });
-          if (res.ok) {
-            const data = await res.json();
-            const parsed = JSON.parse(base64ToUtf8(data.content));
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              lessons = parsed.map(l => ({ ...l, part: detectLessonPart(l) }));
-              await persistLessonsLocallyOnly();
-              if (notify) {
-                updatePartCounts();
-                renderLessonSelect();
-                renderLessonTable();
-                if (lessons.length > 0) await loadLesson(lessons[0].id);
-                showToast(`Đã tải ${lessons.length} bài học từ GitHub!`);
-              }
-              return true;
-            }
+        const parsed = await fetchJsonFromGitHubOrStatic(filePath);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          lessons = parsed.map(l => ({ ...l, part: detectLessonPart(l) }));
+          await persistLessonsLocallyOnly();
+          if (notify) {
+            updatePartCounts();
+            renderLessonSelect();
+            renderLessonTable();
+            if (lessons.length > 0) await loadLesson(lessons[0].id);
+            showToast(`Đã tải ${lessons.length} bài học từ GitHub!`);
           }
-        }
-
-        // 2. Cho học viên / thiết bị khác không nhập Token: tự động đọc file lessons.json cùng thư mục web
-        const staticRes = await fetch(`./${filePath}?t=${Date.now()}`, { cache: 'no-store' });
-        if (staticRes.ok) {
-          const parsed = await staticRes.json();
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            lessons = parsed.map(l => ({ ...l, part: detectLessonPart(l) }));
-            await persistLessonsLocallyOnly();
-            if (notify) {
-              updatePartCounts();
-              renderLessonSelect();
-              renderLessonTable();
-              if (lessons.length > 0) await loadLesson(lessons[0].id);
-              showToast(`Đã tải ${lessons.length} bài học từ máy chủ!`);
-            }
-            return true;
-          }
+          return true;
         }
       } catch (e) {
         if (notify) showToast('Chưa tìm thấy file lessons.json trên GitHub.', 'info');
       }
       return false;
+    }
+
+    async function pullAllFromGitHub(notify = false) {
+      const okLessons = await pullLessonsFromGitHub(false);
+      const okUsers = await pullUsersFromGitHub(false);
+      if (okLessons) {
+        updatePartCounts();
+        renderLessonSelect();
+        renderLessonTable();
+        if (lessons.length > 0) await loadLesson(lessons[0].id);
+      }
+      if (okUsers) {
+        renderUserTable();
+      }
+      if (notify) {
+        if (okLessons || okUsers) {
+          showToast(`Đã đồng bộ ${lessons.length} bài học và ${users.length} tài khoản từ GitHub!`);
+        } else {
+          showToast('Chưa có dữ liệu trên GitHub.', 'info');
+        }
+      }
     }
 
     function exportLessonsJson() {
@@ -1239,7 +1353,7 @@
       try {
         localStorage.setItem('dictation_lessons', JSON.stringify(lessons));
       } catch (e) {}
-      await saveLessonsBackupToDB(lessons);
+      await saveMetadataToDB('lessons_backup', lessons);
       updatePartCounts();
     }
 
@@ -1251,18 +1365,15 @@
     }
 
     async function initLessons() {
-      // Xin quyền lưu trữ bền vững trên trình duyệt
       if (navigator.storage && navigator.storage.persist) {
         navigator.storage.persist().catch(() => {});
       }
 
-      // 1. Thử tải danh sách mới nhất từ GitHub / lessons.json trước
       const pulledFromCloud = await pullLessonsFromGitHub(false);
 
-      // 2. Nếu chưa có file trên GitHub, đọc từ localStorage hoặc IndexedDB backup
       if (!pulledFromCloud) {
         const stored = localStorage.getItem('dictation_lessons');
-        const dbBackup = await getLessonsBackupFromDB();
+        const dbBackup = await getMetadataFromDB('lessons_backup');
 
         if (stored) {
           try {
@@ -2202,8 +2313,8 @@
       );
     }
 
-    window.onload = function() {
-      initAuth();
+    window.onload = async function() {
+      await initAuth();
     };
   </script>
 </body>
