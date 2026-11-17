@@ -1,0 +1,16 @@
+[
+  {
+    "id": "user-admin-root",
+    "fullName": "Quản trị viên Hệ thống",
+    "username": "admin",
+    "password": "admin123",
+    "role": "admin"
+  },
+  {
+    "id": "user-1794932399574",
+    "fullName": "user1",
+    "username": "user1",
+    "password": "123",
+    "role": "user"
+  }
+]
