@@ -114,8 +114,11 @@
           </button>
         </nav>
 
-        <!-- User Profile & Logout -->
+        <!-- Sync Status & User Profile -->
         <div class="flex items-center space-x-2 sm:space-x-3">
+          <span id="cloudSyncIndicator" title="Trạng thái lưu trữ dữ liệu" class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+            <i class="fa-solid fa-hard-drive text-slate-500"></i> Lưu cục bộ
+          </span>
           <div class="text-right hidden md:block">
             <div id="headerUserName" class="text-xs font-bold text-slate-800">Admin</div>
             <div id="headerUserRole" class="text-[10px] font-semibold uppercase tracking-wider text-indigo-600">Quản trị viên</div>
@@ -404,6 +407,55 @@
 
       <!-- TAB 2: QUẢN LÝ & THÊM BÀI HỌC (CHỈ DÀNH CHO ADMIN) -->
       <div id="tabManage" class="hidden max-w-4xl mx-auto space-y-6">
+
+        <!-- CARD CẤU HÌNH ĐỒNG BỘ TỰ ĐỘNG LÊN GITHUB -->
+        <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl p-5 shadow-md border border-indigo-800/50">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-indigo-300">
+                <i class="fa-brands fa-github text-lg"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-white">Tự động lưu vĩnh viễn lên GitHub (Đồng bộ mọi thiết bị)</h3>
+                <p class="text-[11px] text-indigo-200/80">Mỗi khi thêm/sửa/xóa bài học bên dưới, hệ thống tự động cập nhật lên repo GitHub của bạn.</p>
+              </div>
+            </div>
+            <span id="githubConfigStatusBadge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">
+              Chưa kết nối GitHub
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-wider text-indigo-200 mb-1">GitHub Repo (owner/repo) *</label>
+              <input type="text" id="ghRepoInput" placeholder="VD: longhua1801/longhua1801.github.io" class="w-full text-xs px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-indigo-300/50 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-wider text-indigo-200 mb-1">File dữ liệu trên Repo *</label>
+              <input type="text" id="ghFilePathInput" value="lessons.json" placeholder="VD: lessons.json" class="w-full text-xs px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-indigo-300/50 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-wider text-indigo-200 mb-1">GitHub Token (quyền repo) *</label>
+              <input type="password" id="ghTokenInput" placeholder="ghp_xxxxxxxxxxxx" class="w-full text-xs px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-indigo-300/50 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 mt-3 pt-3 border-t border-white/10">
+            <span class="text-[11px] text-indigo-200/75">
+              <i class="fa-solid fa-shield-halved mr-1"></i> Token chỉ lưu an toàn trên trình duyệt của bạn, không đẩy lên GitHub.
+            </span>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="pullLessonsFromGitHub(true)" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition">
+                <i class="fa-solid fa-cloud-arrow-down mr-1"></i> Tải từ GitHub về
+              </button>
+              <button type="button" onclick="saveGitHubConfigAndSync()" class="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow transition">
+                <i class="fa-solid fa-floppy-disk mr-1"></i> Lưu cấu hình & Đồng bộ lên GitHub
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORM THÊM / SỬA BÀI HỌC -->
         <div id="lessonFormCard" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 transition-all">
           <div class="flex items-center justify-between mb-5 border-b border-slate-100 pb-4">
             <div class="flex items-center space-x-3">
@@ -412,7 +464,7 @@
               </div>
               <div>
                 <h2 id="formHeaderTitle" class="text-base font-bold text-slate-900">Thêm bài nghe TOEIC mới</h2>
-                <p id="formHeaderSubtitle" class="text-xs text-slate-500">Chọn đúng Part TOEIC (Part 1–4), tải tệp từ máy tính hoặc dán đường dẫn URL</p>
+                <p id="formHeaderSubtitle" class="text-xs text-slate-500">Dán link URL file nghe GitHub Releases và bấm Lưu — hệ thống sẽ tự ghi nhớ vĩnh viễn</p>
               </div>
             </div>
             <button type="button" id="cancelEditBtn" onclick="resetFormState()" class="hidden px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
@@ -443,16 +495,16 @@
             <div class="space-y-3">
               <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Nguồn File Video / Âm thanh *</label>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div class="border border-dashed border-slate-300 rounded-xl p-4 text-center hover:bg-slate-50 transition cursor-pointer relative" onclick="document.getElementById('inputFile').click()">
-                  <input type="file" id="inputFile" accept="audio/*,video/*" class="hidden" onchange="handleFileUpload(event)">
-                  <i class="fa-solid fa-cloud-arrow-up text-2xl text-indigo-500 mb-2"></i>
-                  <div class="text-xs font-semibold text-slate-700">Tải tệp từ máy tính</div>
-                  <div id="fileUploadName" class="text-[11px] text-slate-400 mt-1 truncate">Hỗ trợ MP3, WAV, MP4, WebM</div>
+                <div class="border border-slate-200 rounded-xl p-4 flex flex-col justify-center bg-indigo-50/30">
+                  <div class="text-xs font-bold text-indigo-700 mb-1.5"><i class="fa-solid fa-link mr-1"></i> Dán Link URL GitHub Releases (Khuyên dùng)</div>
+                  <input type="url" id="inputMediaUrl" placeholder="https://github.com/longhua1801/english-audio-storage/releases/download/..." class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="handleUrlInput()">
                 </div>
 
-                <div class="border border-slate-200 rounded-xl p-4 flex flex-col justify-center">
-                  <div class="text-xs font-semibold text-slate-700 mb-1.5">Hoặc dán Link URL trực tiếp</div>
-                  <input type="url" id="inputMediaUrl" placeholder="https://domain.com/audio.mp3" class="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="handleUrlInput()">
+                <div class="border border-dashed border-slate-300 rounded-xl p-4 text-center hover:bg-slate-50 transition cursor-pointer relative" onclick="document.getElementById('inputFile').click()">
+                  <input type="file" id="inputFile" accept="audio/*,video/*" class="hidden" onchange="handleFileUpload(event)">
+                  <i class="fa-solid fa-cloud-arrow-up text-2xl text-slate-400 mb-1.5"></i>
+                  <div class="text-xs font-semibold text-slate-700">Hoặc tải tệp từ máy tính (Chỉ lưu trên máy này)</div>
+                  <div id="fileUploadName" class="text-[11px] text-slate-400 mt-1 truncate">Hỗ trợ MP3, WAV, MP4, WebM</div>
                 </div>
               </div>
               <p id="mediaPreviewStatus" class="text-xs text-indigo-600 font-medium italic hidden"></p>
@@ -482,11 +534,16 @@
         </div>
 
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-          <div class="flex items-center justify-between mb-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
             <h3 class="text-base font-bold text-slate-900">Danh sách bài học hiện có</h3>
-            <button onclick="restoreDefaultLessons()" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold">
-              <i class="fa-solid fa-arrow-rotate-left mr-1"></i> Khôi phục bài mẫu TOEIC
-            </button>
+            <div class="flex items-center gap-3">
+              <button type="button" onclick="exportLessonsJson()" class="text-xs text-emerald-700 hover:text-emerald-900 font-semibold bg-emerald-50 px-2.5 py-1.5 rounded-lg border border-emerald-200">
+                <i class="fa-solid fa-download mr-1"></i> Tải file lessons.json
+              </button>
+              <button type="button" onclick="restoreDefaultLessons()" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold">
+                <i class="fa-solid fa-arrow-rotate-left mr-1"></i> Khôi phục bài mẫu
+              </button>
+            </div>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-600">
@@ -732,6 +789,7 @@
         tabManageBtn.classList.remove('hidden');
         tabUsersBtn.classList.remove('hidden');
         renderUserTable();
+        loadGitHubConfigUI();
       } else {
         roleBadge.innerText = 'Học viên (User)';
         roleBadge.className = 'text-[10px] font-semibold uppercase tracking-wider text-emerald-600';
@@ -857,11 +915,12 @@
     }
 
     // ==========================================
-    // 2. INDEXED DB - LƯU TRỮ FILE VĨNH VIỄN
+    // 2. INDEXED DB - LƯU TRỮ BỀN VỮNG (METADATA + MEDIA)
     // ==========================================
     const DB_NAME = 'DictationMasterDB';
-    const DB_VERSION = 1;
+    const DB_VERSION = 2;
     const STORE_NAME = 'mediaFiles';
+    const META_STORE_NAME = 'appMetadata';
 
     function openDB() {
       return new Promise((resolve, reject) => {
@@ -871,10 +930,41 @@
           if (!db.objectStoreNames.contains(STORE_NAME)) {
             db.createObjectStore(STORE_NAME);
           }
+          if (!db.objectStoreNames.contains(META_STORE_NAME)) {
+            db.createObjectStore(META_STORE_NAME);
+          }
         };
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
       });
+    }
+
+    async function saveLessonsBackupToDB(lessonArray) {
+      try {
+        const db = await openDB();
+        return new Promise((resolve) => {
+          const tx = db.transaction(META_STORE_NAME, 'readwrite');
+          tx.objectStore(META_STORE_NAME).put(lessonArray, 'lessons_backup');
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => resolve(false);
+        });
+      } catch (e) {
+        return false;
+      }
+    }
+
+    async function getLessonsBackupFromDB() {
+      try {
+        const db = await openDB();
+        return new Promise((resolve) => {
+          const tx = db.transaction(META_STORE_NAME, 'readonly');
+          const req = tx.objectStore(META_STORE_NAME).get('lessons_backup');
+          req.onsuccess = () => resolve(req.result || null);
+          req.onerror = () => resolve(null);
+        });
+      } catch (e) {
+        return null;
+      }
     }
 
     async function saveMediaToDB(lessonId, fileBlob) {
@@ -908,6 +998,228 @@
     }
 
     // ==========================================
+    // 2B. ĐỒNG BỘ TỰ ĐỘNG VỚI GITHUB API (LƯU VĨNH VIỄN TRÊN CLOUD)
+    // ==========================================
+    function getGitHubConfig() {
+      try {
+        const raw = localStorage.getItem('dictation_github_config');
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function autoInferRepoFromPagesUrl() {
+      const host = window.location.hostname;
+      if (host.endsWith('.github.io')) {
+        const owner = host.replace('.github.io', '');
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        const repo = pathParts.length > 0 ? pathParts[0] : `${owner}.github.io`;
+        return `${owner}/${repo}`;
+      }
+      return '';
+    }
+
+    function loadGitHubConfigUI() {
+      const cfg = getGitHubConfig();
+      const repoInput = document.getElementById('ghRepoInput');
+      const pathInput = document.getElementById('ghFilePathInput');
+      const tokenInput = document.getElementById('ghTokenInput');
+      const statusBadge = document.getElementById('githubConfigStatusBadge');
+
+      if (cfg && cfg.repo && cfg.token) {
+        repoInput.value = cfg.repo;
+        pathInput.value = cfg.path || 'lessons.json';
+        tokenInput.value = cfg.token;
+        statusBadge.innerText = `Đã kết nối: ${cfg.repo}`;
+        statusBadge.className = "text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30";
+      } else {
+        const inferred = autoInferRepoFromPagesUrl();
+        if (inferred && !repoInput.value) repoInput.value = inferred;
+        statusBadge.innerText = "Chưa kết nối GitHub";
+        statusBadge.className = "text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30";
+      }
+      updateCloudSyncHeaderBadge();
+    }
+
+    function updateCloudSyncHeaderBadge(syncState = null) {
+      const el = document.getElementById('cloudSyncIndicator');
+      if (!el) return;
+      const cfg = getGitHubConfig();
+      if (syncState === 'syncing') {
+        el.innerHTML = `<i class="fa-solid fa-rotate fa-spin text-indigo-600"></i> Đang lưu GitHub...`;
+        el.className = "hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200";
+        return;
+      }
+      if (cfg && cfg.repo && cfg.token) {
+        el.innerHTML = `<i class="fa-brands fa-github text-emerald-600"></i> Đã đồng bộ GitHub`;
+        el.className = "hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
+      } else {
+        el.innerHTML = `<i class="fa-solid fa-hard-drive text-slate-500"></i> Lưu cục bộ`;
+        el.className = "hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200";
+      }
+    }
+
+    async function saveGitHubConfigAndSync() {
+      const repo = document.getElementById('ghRepoInput').value.trim();
+      const path = document.getElementById('ghFilePathInput').value.trim() || 'lessons.json';
+      const token = document.getElementById('ghTokenInput').value.trim();
+
+      if (!repo || !token) {
+        showToast('Vui lòng nhập đầy đủ GitHub Repo và GitHub Token!', 'error');
+        return;
+      }
+
+      localStorage.setItem('dictation_github_config', JSON.stringify({ repo, path, token }));
+      loadGitHubConfigUI();
+      await pushLessonsToGitHub(true);
+    }
+
+    function utf8ToBase64(str) {
+      const bytes = new TextEncoder().encode(str);
+      let binString = '';
+      for (let i = 0; i < bytes.length; i++) {
+        binString += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binString);
+    }
+
+    function base64ToUtf8(b64) {
+      const binString = atob(b64.replace(/\s/g, ''));
+      const bytes = new Uint8Array(binString.length);
+      for (let i = 0; i < binString.length; i++) {
+        bytes[i] = binString.charCodeAt(i);
+      }
+      return new TextDecoder().decode(bytes);
+    }
+
+    async function pushLessonsToGitHub(showSuccessToast = false) {
+      const cfg = getGitHubConfig();
+      if (!cfg || !cfg.repo || !cfg.token) return false;
+
+      const path = cfg.path || 'lessons.json';
+      const apiUrl = `https://api.github.com/repos/${cfg.repo}/contents/${path}`;
+      const headers = {
+        'Authorization': `Bearer ${cfg.token}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      };
+
+      updateCloudSyncHeaderBadge('syncing');
+
+      try {
+        // Lấy SHA hiện tại của file trên GitHub (nếu file đã tồn tại)
+        let sha = null;
+        const getRes = await fetch(apiUrl, { headers, cache: 'no-store' });
+        if (getRes.ok) {
+          const getData = await getRes.json();
+          sha = getData.sha;
+        } else if (getRes.status !== 404) {
+          const errData = await getRes.json().catch(() => ({}));
+          throw new Error(errData.message || `HTTP ${getRes.status}`);
+        }
+
+        // Chỉ đẩy các bài dùng URL trực tuyến lên GitHub (bỏ qua file local trên ổ cứng)
+        const syncableLessons = lessons.filter(l => !l.isLocalFile);
+        const jsonContent = JSON.stringify(syncableLessons, null, 2);
+        const body = {
+          message: `Update TOEIC lessons (${syncableLessons.length} items) via DictationMaster`,
+          content: utf8ToBase64(jsonContent)
+        };
+        if (sha) body.sha = sha;
+
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers,
+          body: JSON.stringify(body)
+        });
+
+        if (!putRes.ok) {
+          const errData = await putRes.json().catch(() => ({}));
+          throw new Error(errData.message || `HTTP ${putRes.status}`);
+        }
+
+        updateCloudSyncHeaderBadge();
+        if (showSuccessToast) {
+          showToast(`Đã lưu vĩnh viễn ${syncableLessons.length} bài học lên GitHub!`);
+        }
+        return true;
+      } catch (err) {
+        updateCloudSyncHeaderBadge();
+        showToast(`Lỗi đồng bộ GitHub: ${err.message}`, 'error');
+        return false;
+      }
+    }
+
+    async function pullLessonsFromGitHub(notify = false) {
+      const cfg = getGitHubConfig();
+      const filePath = (cfg && cfg.path) ? cfg.path : 'lessons.json';
+
+      try {
+        // 1. Ưu tiên đọc qua GitHub API (không bị cache CDN) nếu có Token
+        if (cfg && cfg.repo && cfg.token) {
+          const apiUrl = `https://api.github.com/repos/${cfg.repo}/contents/${filePath}`;
+          const res = await fetch(apiUrl, {
+            headers: {
+              'Authorization': `Bearer ${cfg.token}`,
+              'Accept': 'application/vnd.github+json'
+            },
+            cache: 'no-store'
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const parsed = JSON.parse(base64ToUtf8(data.content));
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              lessons = parsed.map(l => ({ ...l, part: detectLessonPart(l) }));
+              await persistLessonsLocallyOnly();
+              if (notify) {
+                updatePartCounts();
+                renderLessonSelect();
+                renderLessonTable();
+                if (lessons.length > 0) await loadLesson(lessons[0].id);
+                showToast(`Đã tải ${lessons.length} bài học từ GitHub!`);
+              }
+              return true;
+            }
+          }
+        }
+
+        // 2. Cho học viên / thiết bị khác không nhập Token: tự động đọc file lessons.json cùng thư mục web
+        const staticRes = await fetch(`./${filePath}?t=${Date.now()}`, { cache: 'no-store' });
+        if (staticRes.ok) {
+          const parsed = await staticRes.json();
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            lessons = parsed.map(l => ({ ...l, part: detectLessonPart(l) }));
+            await persistLessonsLocallyOnly();
+            if (notify) {
+              updatePartCounts();
+              renderLessonSelect();
+              renderLessonTable();
+              if (lessons.length > 0) await loadLesson(lessons[0].id);
+              showToast(`Đã tải ${lessons.length} bài học từ máy chủ!`);
+            }
+            return true;
+          }
+        }
+      } catch (e) {
+        if (notify) showToast('Chưa tìm thấy file lessons.json trên GitHub.', 'info');
+      }
+      return false;
+    }
+
+    function exportLessonsJson() {
+      const syncable = lessons.filter(l => !l.isLocalFile);
+      const blob = new Blob([JSON.stringify(syncable, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'lessons.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Đã tải xuống file lessons.json!');
+    }
+
+    // ==========================================
     // 3. KHỞI TẠO & PHÂN LOẠI TOEIC PART 1 - 4
     // ==========================================
     function detectLessonPart(lesson) {
@@ -923,27 +1235,54 @@
       return 'part1';
     }
 
+    async function persistLessonsLocallyOnly() {
+      try {
+        localStorage.setItem('dictation_lessons', JSON.stringify(lessons));
+      } catch (e) {}
+      await saveLessonsBackupToDB(lessons);
+      updatePartCounts();
+    }
+
+    async function saveLessons(syncToCloud = true) {
+      await persistLessonsLocallyOnly();
+      if (syncToCloud && currentUser && currentUser.role === 'admin') {
+        await pushLessonsToGitHub(false);
+      }
+    }
+
     async function initLessons() {
-      const stored = localStorage.getItem('dictation_lessons');
-      if (stored) {
-        try {
-          lessons = JSON.parse(stored);
-          let needSave = false;
-          lessons.forEach(l => {
-            const detected = detectLessonPart(l);
-            if (l.part !== detected) {
-              l.part = detected;
-              needSave = true;
-            }
-          });
-          if (needSave) saveLessons();
-        } catch (e) {
+      // Xin quyền lưu trữ bền vững trên trình duyệt
+      if (navigator.storage && navigator.storage.persist) {
+        navigator.storage.persist().catch(() => {});
+      }
+
+      // 1. Thử tải danh sách mới nhất từ GitHub / lessons.json trước
+      const pulledFromCloud = await pullLessonsFromGitHub(false);
+
+      // 2. Nếu chưa có file trên GitHub, đọc từ localStorage hoặc IndexedDB backup
+      if (!pulledFromCloud) {
+        const stored = localStorage.getItem('dictation_lessons');
+        const dbBackup = await getLessonsBackupFromDB();
+
+        if (stored) {
+          try {
+            lessons = JSON.parse(stored);
+          } catch (e) {
+            lessons = dbBackup || JSON.parse(JSON.stringify(DEFAULT_LESSONS));
+          }
+        } else if (dbBackup && Array.isArray(dbBackup) && dbBackup.length > 0) {
+          lessons = dbBackup;
+        } else {
           lessons = JSON.parse(JSON.stringify(DEFAULT_LESSONS));
         }
-      } else {
-        lessons = JSON.parse(JSON.stringify(DEFAULT_LESSONS));
-        saveLessons();
+
+        lessons.forEach(l => {
+          l.part = detectLessonPart(l);
+        });
+        await persistLessonsLocallyOnly();
       }
+
+      updateCloudSyncHeaderBadge();
       updatePartCounts();
       renderLessonSelect();
       renderLessonTable();
@@ -952,15 +1291,6 @@
         await loadLesson(filtered[0].id);
       } else if (lessons.length > 0) {
         await loadLesson(lessons[0].id);
-      }
-    }
-
-    function saveLessons() {
-      try {
-        localStorage.setItem('dictation_lessons', JSON.stringify(lessons));
-        updatePartCounts();
-      } catch (e) {
-        showToast('Lỗi lưu danh sách bài học vào bộ nhớ trình duyệt!', 'error');
       }
     }
 
@@ -986,7 +1316,6 @@
     async function selectPartFilter(part) {
       currentPartFilter = part;
 
-      // Cập nhật giao diện nút chọn Part
       document.querySelectorAll('.part-filter-btn').forEach(btn => {
         if (btn.dataset.part === part) {
           btn.className = "part-filter-btn py-1.5 px-1 rounded-lg text-[11px] font-bold transition text-center bg-white text-indigo-700 shadow-sm";
@@ -1022,7 +1351,7 @@
           }
         }
         lessons = JSON.parse(JSON.stringify(DEFAULT_LESSONS));
-        saveLessons();
+        await saveLessons(true);
         resetFormState();
         currentPartFilter = 'all';
         await selectPartFilter('all');
@@ -1303,7 +1632,6 @@
       }
     });
 
-    // Nhấn Enter trong ô gõ để Check (Shift + Enter để xuống dòng ở textarea)
     function handleInputKeydown(e) {
       if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.altKey) {
         e.preventDefault();
@@ -1653,7 +1981,7 @@
       document.getElementById('formHeaderIcon').className = "w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold";
       document.getElementById('formHeaderIcon').innerHTML = `<i class="fa-solid fa-plus"></i>`;
       document.getElementById('formHeaderTitle').innerText = "Thêm bài nghe TOEIC mới";
-      document.getElementById('formHeaderSubtitle').innerText = "Chọn đúng Part TOEIC (Part 1–4), tải tệp từ máy tính hoặc dán đường dẫn URL";
+      document.getElementById('formHeaderSubtitle').innerText = "Dán link URL file nghe GitHub Releases và bấm Lưu — hệ thống sẽ tự ghi nhớ vĩnh viễn";
       document.getElementById('cancelEditBtn').classList.add('hidden');
       document.getElementById('submitLessonBtn').className = "px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-md shadow-indigo-200 transition";
       document.getElementById('submitLessonBtn').innerHTML = `<i class="fa-solid fa-cloud-check mr-1.5"></i> Lưu bài học mới`;
@@ -1667,7 +1995,7 @@
           await deleteMediaFromDB(id).catch(() => {});
         }
         lessons = lessons.filter(l => l.id !== id);
-        saveLessons();
+        await saveLessons(true);
         renderLessonSelect();
         renderLessonTable();
         if (document.getElementById('editingLessonId').value === id) {
@@ -1721,43 +2049,98 @@
       e.preventDefault();
       if (!currentUser || currentUser.role !== 'admin') return;
 
-      const editingId = document.getElementById('editingLessonId').value;
-      const title = document.getElementById('inputLessonTitle').value.trim();
-      const part = document.getElementById('inputLessonPart').value;
-      const desc = document.getElementById('inputLessonDesc').value.trim();
-      const transcript = document.getElementById('inputTranscript').value.trim();
-      const directUrl = document.getElementById('inputMediaUrl').value.trim();
+      const submitBtn = document.getElementById('submitLessonBtn');
+      const originalBtnHtml = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang lưu...`;
 
-      if (editingId) {
-        const index = lessons.findIndex(l => l.id === editingId);
-        if (index === -1) return;
-        const existing = lessons[index];
+      try {
+        const editingId = document.getElementById('editingLessonId').value;
+        const title = document.getElementById('inputLessonTitle').value.trim();
+        const part = document.getElementById('inputLessonPart').value;
+        const desc = document.getElementById('inputLessonDesc').value.trim();
+        const transcript = document.getElementById('inputTranscript').value.trim();
+        const directUrl = document.getElementById('inputMediaUrl').value.trim();
 
-        let finalMediaUrl = existing.mediaUrl;
-        let finalMediaType = existing.mediaType;
-        let isLocalFile = existing.isLocalFile;
-        let fileName = existing.fileName || '';
+        if (editingId) {
+          const index = lessons.findIndex(l => l.id === editingId);
+          if (index === -1) return;
+          const existing = lessons[index];
+
+          let finalMediaUrl = existing.mediaUrl;
+          let finalMediaType = existing.mediaType;
+          let isLocalFile = existing.isLocalFile;
+          let fileName = existing.fileName || '';
+
+          if (uploadedFileObject) {
+            await saveMediaToDB(editingId, uploadedFileObject);
+            finalMediaUrl = '';
+            finalMediaType = uploadedFileObject.type.startsWith('video') ? 'video' : 'audio';
+            isLocalFile = true;
+            fileName = uploadedFileObject.name;
+          } else if (directUrl) {
+            if (existing.isLocalFile) {
+              await deleteMediaFromDB(editingId).catch(() => {});
+            }
+            finalMediaUrl = directUrl;
+            finalMediaType = /\.(mp4|webm|ogg|mov)$/i.test(directUrl) ? 'video' : 'audio';
+            isLocalFile = false;
+            fileName = '';
+          }
+
+          lessons[index] = {
+            ...existing,
+            title,
+            part,
+            desc,
+            transcript,
+            mediaUrl: finalMediaUrl,
+            mediaType: finalMediaType,
+            isLocalFile,
+            fileName
+          };
+
+          await saveLessons(true);
+          renderLessonSelect();
+          renderLessonTable();
+          resetFormState();
+
+          if (currentLesson && currentLesson.id === editingId) {
+            await loadLesson(editingId);
+          }
+          showToast('Đã cập nhật & lưu bài học thành công!');
+          return;
+        }
+
+        const newId = 'lesson-' + Date.now();
+        let finalMediaUrl = '';
+        let finalMediaType = 'audio';
+        let isLocalFile = false;
+        let fileName = '';
 
         if (uploadedFileObject) {
-          await saveMediaToDB(editingId, uploadedFileObject);
-          finalMediaUrl = '';
-          finalMediaType = uploadedFileObject.type.startsWith('video') ? 'video' : 'audio';
-          isLocalFile = true;
-          fileName = uploadedFileObject.name;
-        } else if (directUrl) {
-          if (existing.isLocalFile) {
-            await deleteMediaFromDB(editingId).catch(() => {});
+          try {
+            await saveMediaToDB(newId, uploadedFileObject);
+            finalMediaType = uploadedFileObject.type.startsWith('video') ? 'video' : 'audio';
+            isLocalFile = true;
+            fileName = uploadedFileObject.name;
+          } catch (err) {
+            showToast('Lỗi lưu file vào trình duyệt. Hãy thử lại!', 'error');
+            return;
           }
+        } else if (directUrl) {
           finalMediaUrl = directUrl;
           finalMediaType = /\.(mp4|webm|ogg|mov)$/i.test(directUrl) ? 'video' : 'audio';
           isLocalFile = false;
-          fileName = '';
+        } else {
+          showToast('Vui lòng dán liên kết URL tệp nghe hoặc tải tệp lên!', 'error');
+          return;
         }
 
-        lessons[index] = {
-          ...existing,
-          title,
+        const newLesson = {
+          id: newId,
           part,
+          title,
           desc,
           transcript,
           mediaUrl: finalMediaUrl,
@@ -1766,65 +2149,25 @@
           fileName
         };
 
-        saveLessons();
+        lessons.unshift(newLesson);
+        await saveLessons(true);
         renderLessonSelect();
         renderLessonTable();
         resetFormState();
 
-        if (currentLesson && currentLesson.id === editingId) {
-          await loadLesson(editingId);
+        const hasCloud = !!getGitHubConfig();
+        showToast(hasCloud ? 'Đã thêm & lưu vĩnh viễn lên GitHub!' : 'Đã thêm bài học mới!');
+        setTimeout(() => {
+          quickPractice(newLesson.id);
+        }, 400);
+      } finally {
+        submitBtn.disabled = false;
+        if (document.getElementById('editingLessonId').value === '') {
+          submitBtn.innerHTML = `<i class="fa-solid fa-cloud-check mr-1.5"></i> Lưu bài học mới`;
+        } else {
+          submitBtn.innerHTML = originalBtnHtml;
         }
-        showToast('Đã cập nhật bài học thành công!');
-        return;
       }
-
-      const newId = 'lesson-' + Date.now();
-      let finalMediaUrl = '';
-      let finalMediaType = 'audio';
-      let isLocalFile = false;
-      let fileName = '';
-
-      if (uploadedFileObject) {
-        try {
-          await saveMediaToDB(newId, uploadedFileObject);
-          finalMediaType = uploadedFileObject.type.startsWith('video') ? 'video' : 'audio';
-          isLocalFile = true;
-          fileName = uploadedFileObject.name;
-        } catch (err) {
-          showToast('Lỗi lưu file vào trình duyệt. Hãy thử lại!', 'error');
-          return;
-        }
-      } else if (directUrl) {
-        finalMediaUrl = directUrl;
-        finalMediaType = /\.(mp4|webm|ogg|mov)$/i.test(directUrl) ? 'video' : 'audio';
-        isLocalFile = false;
-      } else {
-        showToast('Vui lòng tải lên tệp hoặc dán liên kết URL tệp nghe!', 'error');
-        return;
-      }
-
-      const newLesson = {
-        id: newId,
-        part,
-        title,
-        desc,
-        transcript,
-        mediaUrl: finalMediaUrl,
-        mediaType: finalMediaType,
-        isLocalFile,
-        fileName
-      };
-
-      lessons.unshift(newLesson);
-      saveLessons();
-      renderLessonSelect();
-      renderLessonTable();
-      resetFormState();
-
-      showToast('Thêm bài học mới thành công!');
-      setTimeout(() => {
-        quickPractice(newLesson.id);
-      }, 400);
     }
 
     function showToast(msg, type = 'success') {
