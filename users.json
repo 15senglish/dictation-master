@@ -12,5 +12,12 @@
     "username": "user1",
     "password": "123",
     "role": "user"
+  },
+  {
+    "id": "user-1794933006212",
+    "fullName": "Long",
+    "username": "long",
+    "password": "123",
+    "role": "user"
   }
 ]
