@@ -1,0 +1,64 @@
+[
+  {
+    "id": "lesson-1794924471715",
+    "part": "part2",
+    "title": "E26-T01-09",
+    "desc": "",
+    "transcript": "There's a nice park nearby, right?\n(A) Did you order paper for the copier?\n(B) Yes-it's next to Greendale Lake.\n(C) They're in the parking garage.",
+    "mediaUrl": "https://github.com/longhua1801/english-audio-storage/releases/download/E26-T01-09/E26-T01-09.mp3",
+    "mediaType": "audio",
+    "isLocalFile": false,
+    "fileName": ""
+  },
+  {
+    "id": "lesson-p2-1",
+    "part": "part2",
+    "title": "E26-T01-07 (Part 2 - Conference Location)",
+    "desc": "TOEIC Listening Part 2 - Hỏi đáp về địa điểm tổ chức hội nghị.",
+    "mediaUrl": "https://github.com/longhua1801/english-audio-storage/releases/download/E26-T01-07/E26-T01-07.mp3",
+    "mediaType": "audio",
+    "isLocalFile": false,
+    "transcript": "Where is the conference being held? (A) A three-day vacation. (B) At the Riverview Hotel. (C) In the supply cabinet."
+  },
+  {
+    "id": "lesson-p2-2",
+    "part": "part2",
+    "title": "E26-T01-08 (Part 2 - Sample Question)",
+    "desc": "TOEIC Listening Part 2 - Câu hỏi mẫu luyện tập chuyển câu Next.",
+    "mediaUrl": "https://github.com/longhua1801/english-audio-storage/releases/download/E26-T01-08/E26-T01-08.mp3",
+    "mediaType": "audio",
+    "isLocalFile": false,
+    "transcript": "When does the warehouse manager arrive?\n(A) Sure, no problem.\n(B) About twelve shipping boxes.\n(C) Not until this afternoon.",
+    "fileName": ""
+  },
+  {
+    "id": "lesson-p1-1",
+    "part": "part1",
+    "title": "TOEIC Part 1 - Office Meeting Scene",
+    "desc": "TOEIC Listening Part 1 - Mô tả tranh hoạt động tại văn phòng.",
+    "mediaUrl": "https://actions.google.com/sounds/v1/water/rain_heavy_loud.ogg",
+    "mediaType": "audio",
+    "isLocalFile": false,
+    "transcript": "Some people are gathered around a table looking at a laptop computer."
+  },
+  {
+    "id": "lesson-p3-1",
+    "part": "part3",
+    "title": "TOEIC Part 3 - Short Conversation",
+    "desc": "TOEIC Listening Part 3 - Hội thoại ngắn giữa hai đồng nghiệp.",
+    "mediaUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+    "mediaType": "video",
+    "isLocalFile": false,
+    "transcript": "A consistent morning routine sets the tone for the entire day. Start with a glass of water, get some fresh air, and review your top priorities before checking your phone."
+  },
+  {
+    "id": "lesson-p4-1",
+    "part": "part4",
+    "title": "TOEIC Part 4 - Airport Announcement",
+    "desc": "TOEIC Listening Part 4 - Bài nói chuyện / thông báo ngắn.",
+    "mediaUrl": "https://actions.google.com/sounds/v1/water/rain_heavy_loud.ogg",
+    "mediaType": "audio",
+    "isLocalFile": false,
+    "transcript": "Listening to native speakers every single day will naturally train your brain to recognize different accents, connected speech, and subtle sentence stress."
+  }
+]
