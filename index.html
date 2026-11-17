@@ -178,7 +178,7 @@
 
           <!-- Card Trình phát media & Điều khiển -->
           <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col items-center">
-            <div class="w-full bg-black rounded-xl overflow-hidden shadow-inner relative flex items-center justify-center aspect-video max-h-60 sm:max-h-64">
+            <div onclick="togglePlay()" title="Bấm để Phát / Tạm dừng (hoặc nhấn Ctrl + Space)" class="w-full bg-black rounded-xl overflow-hidden shadow-inner relative flex items-center justify-center aspect-video max-h-60 sm:max-h-64 cursor-pointer">
               <video id="mediaPlayer" class="w-full h-full object-contain" playsinline preload="metadata"></video>
               <div id="audioVisualizer" class="hidden absolute inset-0 bg-gradient-to-br from-indigo-950 to-slate-900 flex flex-col items-center justify-center text-white pointer-events-none">
                 <i class="fa-solid fa-volume-high text-4xl text-indigo-400 mb-2 animate-pulse"></i>
@@ -196,20 +196,20 @@
 
             <!-- Quick Controls -->
             <div class="w-full grid grid-cols-5 gap-2 mt-3 pt-3 border-t border-slate-100">
-              <button onclick="rewind(5)" title="Tua lùi 5 giây" class="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition active:scale-95 text-xs font-semibold">
+              <button type="button" onclick="rewind(5); this.blur();" title="Tua lùi 5 giây" class="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition active:scale-95 text-xs font-semibold">
                 <i class="fa-solid fa-rotate-left mb-1 text-sm"></i> -5s
               </button>
-              <button onclick="rewind(2)" title="Tua lùi 2 giây" class="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition active:scale-95 text-xs font-semibold">
+              <button type="button" onclick="rewind(2); this.blur();" title="Tua lùi 2 giây" class="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition active:scale-95 text-xs font-semibold">
                 <i class="fa-solid fa-backward-step mb-1 text-sm"></i> -2s
               </button>
-              <button id="playPauseBtn" onclick="togglePlay()" class="flex flex-col items-center justify-center p-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-200 transition active:scale-95 text-xs font-semibold">
+              <button type="button" id="playPauseBtn" onclick="togglePlay(); this.blur();" class="flex flex-col items-center justify-center p-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-200 transition active:scale-95 text-xs font-semibold">
                 <i id="playIcon" class="fa-solid fa-play mb-1 text-sm"></i> <span>Play</span>
               </button>
-              <button onclick="forward(5)" title="Tua tới 5 giây" class="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition active:scale-95 text-xs font-semibold">
+              <button type="button" onclick="forward(5); this.blur();" title="Tua tới 5 giây" class="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition active:scale-95 text-xs font-semibold">
                 <i class="fa-solid fa-rotate-right mb-1 text-sm"></i> +5s
               </button>
               <div class="relative flex items-center justify-center">
-                <select id="playbackRate" onchange="changePlaybackRate()" class="w-full h-full text-center bg-slate-100 hover:bg-slate-200 font-semibold text-xs text-slate-700 rounded-xl cursor-pointer border-none focus:ring-2 focus:ring-indigo-500">
+                <select id="playbackRate" onchange="changePlaybackRate(); this.blur();" class="w-full h-full text-center bg-slate-100 hover:bg-slate-200 font-semibold text-xs text-slate-700 rounded-xl cursor-pointer border-none focus:ring-2 focus:ring-indigo-500">
                   <option value="0.75">0.75x</option>
                   <option value="1.0" selected>1.0x</option>
                   <option value="1.25">1.25x</option>
@@ -219,12 +219,12 @@
             </div>
 
             <div class="w-full mt-3 bg-amber-50/70 rounded-xl p-2.5 border border-amber-200 text-amber-900 text-xs">
-              <p class="font-semibold flex items-center gap-1.5 mb-1 text-amber-800">
-                <i class="fa-regular fa-keyboard"></i> Phím tắt thao tác nhanh:
+              <p class="font-semibold flex items-center gap-1.5 mb-1.5 text-amber-800">
+                <i class="fa-regular fa-keyboard"></i> Phím tắt thao tác nhanh (dùng mọi lúc):
               </p>
               <div class="flex flex-wrap gap-2 text-[11px]">
-                <span><span class="kbd-badge">Ctrl</span> + <span class="kbd-badge">Space</span>: Play/Pause</span>
-                <span><span class="kbd-badge">Alt</span> + <span class="kbd-badge">←</span> / <span class="kbd-badge">→</span>: Tua 3s</span>
+                <span><span class="kbd-badge">Ctrl</span> + <span class="kbd-badge">Space</span>: Play / Pause</span>
+                <span><span class="kbd-badge">Ctrl</span> + <span class="kbd-badge">←</span> / <span class="kbd-badge">→</span>: Tua 3s</span>
                 <span><span class="kbd-badge">Enter</span>: Check đáp án</span>
               </div>
             </div>
@@ -998,7 +998,6 @@
       renderLessonSelect();
       const filtered = getFilteredLessons();
       if (filtered.length > 0) {
-        // Nếu bài hiện tại không nằm trong part vừa chọn thì tải bài đầu tiên của Part đó
         if (!currentLesson || !filtered.some(l => l.id === currentLesson.id)) {
           await loadLesson(filtered[0].id);
         } else {
@@ -1098,7 +1097,6 @@
       partBadge.innerText = pLabel;
       visualizerPartLabel.innerText = `TOEIC LISTENING • ${pLabel}`;
 
-      // Reset tất cả các ô nhập
       document.getElementById('userDictationInput').value = '';
       document.getElementById('p2QuestionInput').value = '';
       document.getElementById('p2OptionAInput').value = '';
@@ -1125,13 +1123,11 @@
       document.getElementById('lessonDesc').innerText = currentLesson.desc || '';
       document.getElementById('originalTranscriptContent').innerText = currentLesson.transcript;
       
-      // Thiết lập chế độ nhập liệu (Part 2 tách ô A,B,C hoặc Tiêu chuẩn)
       configureInputModeForLesson(currentLesson);
 
       document.getElementById('resultCard').classList.add('hidden');
       document.getElementById('originalTranscriptBox').classList.add('hidden');
 
-      // Đặt lại trạng thái nút Next
       const nextResultBtn = document.getElementById('nextLessonResultBtn');
       nextResultBtn.classList.add('hidden');
       updateNavigationButtonsState();
@@ -1192,7 +1188,6 @@
       prevBtn.disabled = idx <= 0;
       nextTopBtn.disabled = idx >= list.length - 1;
 
-      // Reset kiểu dáng mặc định cho nút Next ở thanh điều khiển
       nextTopBtn.className = "px-3.5 py-2 text-xs font-bold rounded-xl border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-700 transition disabled:opacity-40 disabled:pointer-events-none flex items-center gap-1.5";
     }
 
@@ -1222,6 +1217,7 @@
 
     function onSelectLesson() {
       const select = document.getElementById('lessonSelect');
+      select.blur();
       loadLesson(select.value);
     }
 
@@ -1287,15 +1283,21 @@
       return `${m}:${s < 10 ? '0' : ''}${s}`;
     }
 
+    // ==========================================
+    // PHÍM TẮT THỐNG NHẤT: CTRL + SPACE, CTRL + ← / →
+    // ==========================================
     window.addEventListener('keydown', (e) => {
       if (!currentUser) return;
-      if ((e.ctrlKey || e.altKey) && e.code === 'Space') {
+      const tabLearner = document.getElementById('tabLearner');
+      if (tabLearner.classList.contains('hidden')) return;
+
+      if (e.ctrlKey && e.code === 'Space') {
         e.preventDefault();
         togglePlay();
-      } else if (e.altKey && e.code === 'ArrowLeft') {
+      } else if (e.ctrlKey && e.code === 'ArrowLeft') {
         e.preventDefault();
         rewind(3);
-      } else if (e.altKey && e.code === 'ArrowRight') {
+      } else if (e.ctrlKey && e.code === 'ArrowRight') {
         e.preventDefault();
         forward(3);
       }
@@ -1382,7 +1384,6 @@
         return;
       }
 
-      // Ở chế độ Part 2, tự động đưa con trỏ vào đúng ô đang cần điền/sửa (Question, A, B hoặc C)
       const q = document.getElementById('p2QuestionInput').value.trim();
       const a = document.getElementById('p2OptionAInput').value.trim();
       const b = document.getElementById('p2OptionBInput').value.trim();
@@ -1390,7 +1391,6 @@
 
       const originalText = currentLesson.transcript;
       const parts = originalText.split(/\((A|B|C)\)/i);
-      // parts: [questionText, 'A', optAText, 'B', optBText, 'C', optCText]
       if (parts.length >= 7) {
         const ignoreCase = document.getElementById('optIgnoreCase').checked;
         const ignorePunct = document.getElementById('optIgnorePunctuation').checked;
@@ -1420,7 +1420,6 @@
       const originalWords = currentLesson.transcript.trim().split(/\s+/).filter(Boolean);
       const userWords = userText.length === 0 ? [] : userText.split(/\s+/).filter(Boolean);
 
-      // Tìm vị trí từ đầu tiên bị sai hoặc thiếu tính từ trái qua phải
       let firstMismatchIndex = 0;
       while (firstMismatchIndex < originalWords.length && firstMismatchIndex < userWords.length) {
         const origClean = cleanToken(originalWords[firstMismatchIndex], ignoreCase, ignorePunct);
