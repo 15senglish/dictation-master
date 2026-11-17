@@ -13,12 +13,13 @@
   {
     "id": "lesson-p2-1",
     "part": "part2",
-    "title": "E26-T01-07 (Part 2 - Conference Location)",
+    "title": "E26-T01-07",
     "desc": "TOEIC Listening Part 2 - Hỏi đáp về địa điểm tổ chức hội nghị.",
     "mediaUrl": "https://github.com/longhua1801/english-audio-storage/releases/download/E26-T01-07/E26-T01-07.mp3",
     "mediaType": "audio",
     "isLocalFile": false,
-    "transcript": "Where is the conference being held? (A) A three-day vacation. (B) At the Riverview Hotel. (C) In the supply cabinet."
+    "transcript": "Where is the conference being held? (A) A three-day vacation. (B) At the Riverview Hotel. (C) In the supply cabinet.",
+    "fileName": ""
   },
   {
     "id": "lesson-p2-2",
