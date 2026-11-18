@@ -1,15 +1,5 @@
 [
   {
-    "id": "lesson-p1-1",
-    "part": "part1",
-    "title": "TOEIC Part 1 - Office Meeting Scene",
-    "desc": "TOEIC Listening Part 1 - Mô tả tranh hoạt động tại văn phòng.",
-    "mediaUrl": "https://actions.google.com/sounds/v1/water/rain_heavy_loud.ogg",
-    "mediaType": "audio",
-    "isLocalFile": false,
-    "transcript": "Some people are gathered around a table looking at a laptop computer."
-  },
-  {
     "id": "lesson-p3-1",
     "part": "part3",
     "title": "TOEIC Part 3 - Short Conversation",
