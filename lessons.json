@@ -1,27 +1,5 @@
 [
   {
-    "id": "lesson-p2-1",
-    "part": "part2",
-    "title": "E26-T01-07",
-    "desc": "TOEIC Listening Part 2 - Hỏi đáp về địa điểm tổ chức hội nghị.",
-    "mediaUrl": "https://github.com/longhua1801/english-audio-storage/releases/download/E26-T01-07/E26-T01-07.mp3",
-    "mediaType": "audio",
-    "isLocalFile": false,
-    "transcript": "Where is the conference being held? (A) A three-day vacation. (B) At the Riverview Hotel. (C) In the supply cabinet.",
-    "fileName": ""
-  },
-  {
-    "id": "lesson-p2-2",
-    "part": "part2",
-    "title": "E26-T01-08",
-    "desc": "TOEIC Listening Part 2 - Câu hỏi mẫu luyện tập chuyển câu Next.",
-    "mediaUrl": "https://github.com/longhua1801/english-audio-storage/releases/download/E26-T01-08/E26-T01-08.mp3",
-    "mediaType": "audio",
-    "isLocalFile": false,
-    "transcript": "When does the warehouse manager arrive?\n(A) Sure, no problem.\n(B) About twelve shipping boxes.\n(C) Not until this afternoon.",
-    "fileName": ""
-  },
-  {
     "id": "lesson-p1-1",
     "part": "part1",
     "title": "TOEIC Part 1 - Office Meeting Scene",
