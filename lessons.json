@@ -1,15 +1,5 @@
 [
   {
-    "id": "lesson-p3-1",
-    "part": "part3",
-    "title": "TOEIC Part 3 - Short Conversation",
-    "desc": "TOEIC Listening Part 3 - Hội thoại ngắn giữa hai đồng nghiệp.",
-    "mediaUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
-    "mediaType": "video",
-    "isLocalFile": false,
-    "transcript": "A consistent morning routine sets the tone for the entire day. Start with a glass of water, get some fresh air, and review your top priorities before checking your phone."
-  },
-  {
     "id": "lesson-E26-T01-01",
     "part": "part1",
     "title": "E26-T01-01 (PART1)",
