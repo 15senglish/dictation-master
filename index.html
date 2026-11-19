@@ -132,7 +132,7 @@
     </header>
 
     <!-- Main Content Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 lg:pb-6 flex-1 w-full">
 
       <!-- TAB 1: PHÒNG LUYỆN NGHE -->
       <div id="tabLearner" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -181,7 +181,7 @@
 
           <!-- Card Trình phát media & Điều khiển -->
           <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col items-center">
-            <div onclick="togglePlay()" title="Bấm để Phát / Tạm dừng (hoặc nhấn Ctrl + Space)" class="w-full bg-black rounded-xl overflow-hidden shadow-inner relative flex items-center justify-center aspect-video max-h-60 sm:max-h-64 cursor-pointer">
+            <div onclick="togglePlay()" title="Bấm để Phát / Tạm dừng (hoặc nhấn Ctrl + Space)" class="w-full bg-black rounded-xl overflow-hidden shadow-inner relative flex items-center justify-center h-24 lg:h-auto lg:aspect-video lg:max-h-64 cursor-pointer">
               <video id="mediaPlayer" class="w-full h-full object-contain" playsinline preload="metadata"></video>
               <div id="audioVisualizer" class="hidden absolute inset-0 bg-gradient-to-br from-indigo-950 to-slate-900 flex flex-col items-center justify-center text-white pointer-events-none">
                 <i class="fa-solid fa-volume-high text-4xl text-indigo-400 mb-2 animate-pulse"></i>
@@ -221,7 +221,7 @@
               </div>
             </div>
 
-            <div class="w-full mt-3 bg-amber-50/70 rounded-xl p-2.5 border border-amber-200 text-amber-900 text-xs">
+            <div class="hidden lg:block w-full mt-3 bg-amber-50/70 rounded-xl p-2.5 border border-amber-200 text-amber-900 text-xs">
               <p class="font-semibold flex items-center gap-1.5 mb-1.5 text-amber-800">
                 <i class="fa-regular fa-keyboard"></i> Phím tắt thao tác nhanh (dùng mọi lúc):
               </p>
@@ -667,6 +667,40 @@
       </div>
 
     </main>
+  </div>
+
+  <!-- THANH ĐIỀU KHIỂN NỔI DÀNH RIÊNG CHO ĐIỆN THOẠI (MOBILE MINI PLAYER) -->
+  <div id="mobileFloatingBar" class="hidden lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_15px_rgba(0,0,0,0.08)] px-3 py-2 transition-all duration-150">
+    <!-- Thanh tua siêu mảnh trên mép thanh nổi -->
+    <div class="flex items-center gap-2 mb-1.5">
+      <span id="mobCurrentTime" class="text-[10px] font-mono text-slate-500 w-8 text-right">0:00</span>
+      <input id="mobSeekBar" type="range" min="0" max="100" value="0" step="0.1" class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+      <span id="mobDuration" class="text-[10px] font-mono text-slate-500 w-8">0:00</span>
+    </div>
+
+    <!-- Hàng nút bấm thao tác nhanh 1 chạm -->
+    <div class="grid grid-cols-5 gap-1.5 items-center">
+      <button type="button" onmousedown="event.preventDefault()" onclick="rewind(3)" class="py-2 rounded-xl bg-slate-100 active:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1">
+        <i class="fa-solid fa-rotate-left text-[11px]"></i> -3s
+      </button>
+
+      <button type="button" id="mobPlayPauseBtn" onmousedown="event.preventDefault()" onclick="togglePlay()" class="py-2 rounded-xl bg-indigo-600 active:bg-indigo-700 text-white font-bold text-xs shadow-sm flex items-center justify-center gap-1.5">
+        <i id="mobPlayIcon" class="fa-solid fa-play"></i>
+        <span id="mobPlayText">Play</span>
+      </button>
+
+      <button type="button" onmousedown="event.preventDefault()" onclick="forward(3)" class="py-2 rounded-xl bg-slate-100 active:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1">
+        +3s <i class="fa-solid fa-rotate-right text-[11px]"></i>
+      </button>
+
+      <button type="button" id="mobRateBtn" onmousedown="event.preventDefault()" onclick="cycleMobilePlaybackRate()" class="py-2 rounded-xl bg-slate-100 active:bg-slate-200 text-slate-700 font-bold text-xs">
+        1.0x
+      </button>
+
+      <button type="button" onmousedown="event.preventDefault()" onclick="checkDictationResult()" class="py-2 rounded-xl bg-emerald-600 active:bg-emerald-700 text-white font-bold text-xs shadow-sm flex items-center justify-center gap-1">
+        <i class="fa-solid fa-check"></i> Check
+      </button>
+    </div>
   </div>
 
   <!-- Notification Toast Modal -->
@@ -1559,6 +1593,9 @@
         tabUsersBtn.className = activeClass;
         if (!player.paused) player.pause();
       }
+      if (typeof adjustFloatingBarForKeyboard === 'function') {
+        adjustFloatingBarForKeyboard();
+      }
     }
 
     function isPart2Mode(lesson) {
@@ -2389,6 +2426,79 @@
           '"': '&quot;'
         }[tag] || tag)
       );
+    }
+
+    // ==========================================
+    // 7. ĐỒNG BỘ THANH ĐIỀU KHIỂN NỔI TRÊN MOBILE & BÀN PHÍM ẢO
+    // ==========================================
+    const mobSeekBar = document.getElementById('mobSeekBar');
+    const mobCurrentTime = document.getElementById('mobCurrentTime');
+    const mobDuration = document.getElementById('mobDuration');
+    const mobPlayPauseBtn = document.getElementById('mobPlayPauseBtn');
+    const mobPlayIcon = document.getElementById('mobPlayIcon');
+    const mobPlayText = document.getElementById('mobPlayText');
+    const mobRateBtn = document.getElementById('mobRateBtn');
+    const mobileFloatingBar = document.getElementById('mobileFloatingBar');
+
+    function syncMobilePlayUI() {
+      if (!mobPlayPauseBtn) return;
+      if (player.paused) {
+        mobPlayIcon.className = "fa-solid fa-play";
+        mobPlayText.innerText = "Play";
+        mobPlayPauseBtn.classList.replace('bg-amber-600', 'bg-indigo-600');
+      } else {
+        mobPlayIcon.className = "fa-solid fa-pause";
+        mobPlayText.innerText = "Pause";
+        mobPlayPauseBtn.classList.replace('bg-indigo-600', 'bg-amber-600');
+      }
+    }
+    player.addEventListener('play', syncMobilePlayUI);
+    player.addEventListener('pause', syncMobilePlayUI);
+
+    player.addEventListener('timeupdate', () => {
+      if (!player.duration || !mobSeekBar) return;
+      mobSeekBar.value = (player.currentTime / player.duration) * 100;
+      mobCurrentTime.innerText = formatTime(player.currentTime);
+    });
+    player.addEventListener('loadedmetadata', () => {
+      if (mobDuration) mobDuration.innerText = formatTime(player.duration);
+    });
+    if (mobSeekBar) {
+      mobSeekBar.addEventListener('input', () => {
+        if (!player.duration) return;
+        player.currentTime = (mobSeekBar.value / 100) * player.duration;
+      });
+    }
+
+    function cycleMobilePlaybackRate() {
+      const rates = [0.75, 1.0, 1.25, 1.5];
+      const current = parseFloat(document.getElementById('playbackRate').value) || 1.0;
+      const nextRate = rates[(rates.indexOf(current) + 1) % rates.length];
+      document.getElementById('playbackRate').value = nextRate === 1.0 ? "1.0" : String(nextRate);
+      changePlaybackRate();
+      if (mobRateBtn) mobRateBtn.innerText = nextRate + 'x';
+    }
+
+    function adjustFloatingBarForKeyboard() {
+      if (!mobileFloatingBar) return;
+      const tabLearner = document.getElementById('tabLearner');
+      if (!currentUser || (tabLearner && tabLearner.classList.contains('hidden'))) {
+        mobileFloatingBar.classList.add('hidden');
+        return;
+      } else {
+        mobileFloatingBar.classList.remove('hidden');
+      }
+
+      if (window.visualViewport) {
+        const vv = window.visualViewport;
+        const bottomOffset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+        mobileFloatingBar.style.bottom = `${bottomOffset}px`;
+      }
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', adjustFloatingBarForKeyboard);
+      window.visualViewport.addEventListener('scroll', adjustFloatingBarForKeyboard);
     }
 
     window.onload = async function() {
